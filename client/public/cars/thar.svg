@@ -1,0 +1,143 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 450" width="100%" height="100%">
+  <defs>
+    <linearGradient id="tharBg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#181512" />
+      <stop offset="100%" stop-color="#0a0807" />
+    </linearGradient>
+    <linearGradient id="tharBody" x1="0%" y1="0%" x2="100%" y2="50%">
+      <stop offset="0%" stop-color="#262626" />
+      <stop offset="50%" stop-color="#171717" />
+      <stop offset="100%" stop-color="#0a0a0a" />
+    </linearGradient>
+    <linearGradient id="hardTopGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#404040" />
+      <stop offset="100%" stop-color="#262626" />
+    </linearGradient>
+    <linearGradient id="tintGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#22d3ee" stop-opacity="0.4" />
+      <stop offset="100%" stop-color="#0891b2" stop-opacity="0.6" />
+    </linearGradient>
+    <filter id="tharShadow" x="-10%" y="-10%" width="120%" height="130%">
+      <feDropShadow dx="0" dy="18" stdDeviation="20" flood-color="#000" flood-opacity="0.75" />
+    </filter>
+  </defs>
+
+  <!-- Background -->
+  <rect width="800" height="450" fill="url(#tharBg)" />
+  
+  <!-- Subtle Offroad Contour Lines -->
+  <g opacity="0.08" stroke="#f97316" stroke-width="1.5" fill="none">
+    <path d="M 0 380 Q 200 360 400 375 T 800 360" />
+    <path d="M 0 410 Q 300 395 500 410 T 800 390" />
+  </g>
+
+  <!-- Ground Shadow -->
+  <ellipse cx="400" cy="375" rx="360" ry="24" fill="#f97316" opacity="0.12" />
+  <ellipse cx="400" cy="370" rx="330" ry="14" fill="#000" opacity="0.7" />
+
+  <!-- Car Graphics: Mahindra Thar 4x4 (Rugged Boxy Silhouette) -->
+  <g filter="url(#tharShadow)">
+    <!-- Rear Mounted Spare Wheel (Thar Signature) -->
+    <g transform="translate(685, 250)">
+      <circle cx="0" cy="0" r="48" fill="#171717" stroke="#404040" stroke-width="6" />
+      <circle cx="0" cy="0" r="32" fill="#262626" stroke="#f97316" stroke-width="2" />
+      <circle cx="0" cy="0" r="14" fill="#0a0a0a" />
+      <text x="0" y="4" fill="#f97316" font-size="8" font-family="sans-serif" font-weight="900" text-anchor="middle">4x4</text>
+    </g>
+
+    <!-- Main Boxy Body Shell -->
+    <path d="M 150 310
+             L 155 250
+             L 270 245
+             L 340 160
+             L 630 160
+             L 655 165
+             L 660 315
+             L 610 315
+             Q 600 290 560 290
+             Q 520 290 510 315
+             L 340 315
+             Q 330 290 290 290
+             Q 250 290 240 315
+             L 165 315
+             Z"
+          fill="url(#tharBody)" stroke="#404040" stroke-width="2" />
+
+    <!-- Removable Hard Top Cabin -->
+    <path d="M 342 165
+             L 630 165
+             L 645 235
+             L 300 235
+             Z"
+          fill="url(#hardTopGrad)" />
+
+    <!-- Upright Windshield & Windows -->
+    <path d="M 348 172 L 440 172 L 440 228 L 315 228 Z" fill="url(#tintGrad)" stroke="#171717" stroke-width="3" />
+    <path d="M 452 172 L 620 172 L 632 228 L 452 228 Z" fill="url(#tintGrad)" stroke="#171717" stroke-width="3" />
+
+    <!-- Massive Offroad Wheel Arch Cladding -->
+    <!-- Front Arch -->
+    <path d="M 215 320 Q 220 260 290 260 Q 360 260 365 320" fill="none" stroke="#262626" stroke-width="18" stroke-linecap="round" />
+    <!-- Rear Arch -->
+    <path d="M 485 320 Q 490 260 560 260 Q 630 260 635 320" fill="none" stroke="#262626" stroke-width="18" stroke-linecap="round" />
+
+    <!-- Signature Round Retro Headlamp -->
+    <circle cx="160" cy="265" r="14" fill="#fef08a" stroke="#ca8a04" stroke-width="2" />
+    <circle cx="160" cy="265" r="7" fill="#ffffff" />
+    
+    <!-- Thar Vertical Slatted Grille Preview -->
+    <line x1="178" y1="250" x2="178" y2="280" stroke="#f97316" stroke-width="3" />
+    <line x1="186" y1="250" x2="186" y2="280" stroke="#f97316" stroke-width="3" />
+
+    <!-- Tubular Rock Sliders / Footstep -->
+    <rect x="365" y="322" width="120" height="8" rx="4" fill="#404040" stroke="#171717" stroke-width="2" />
+
+    <!-- Rugged All-Terrain Wheels with Deep Tread -->
+    <!-- Front Wheel -->
+    <g transform="translate(290, 315)">
+      <circle cx="0" cy="0" r="54" fill="#171717" stroke="#404040" stroke-width="6" />
+      <circle cx="0" cy="0" r="36" fill="#262626" stroke="#525252" stroke-width="3" />
+      <!-- Off-road Alloy Ring -->
+      <circle cx="0" cy="0" r="24" fill="#0a0a0a" />
+      <circle cx="0" cy="0" r="8" fill="#f97316" />
+      <!-- Wheel Lug Nuts -->
+      <circle cx="0" cy="-15" r="3" fill="#cbd5e1" />
+      <circle cx="14" cy="-5" r="3" fill="#cbd5e1" />
+      <circle cx="9" cy="12" r="3" fill="#cbd5e1" />
+      <circle cx="-9" cy="12" r="3" fill="#cbd5e1" />
+      <circle cx="-14" cy="-5" r="3" fill="#cbd5e1" />
+    </g>
+
+    <!-- Rear Wheel -->
+    <g transform="translate(560, 315)">
+      <circle cx="0" cy="0" r="54" fill="#171717" stroke="#404040" stroke-width="6" />
+      <circle cx="0" cy="0" r="36" fill="#262626" stroke="#525252" stroke-width="3" />
+      <!-- Off-road Alloy Ring -->
+      <circle cx="0" cy="0" r="24" fill="#0a0a0a" />
+      <circle cx="0" cy="0" r="8" fill="#f97316" />
+      <!-- Wheel Lug Nuts -->
+      <circle cx="0" cy="-15" r="3" fill="#cbd5e1" />
+      <circle cx="14" cy="-5" r="3" fill="#cbd5e1" />
+      <circle cx="9" cy="12" r="3" fill="#cbd5e1" />
+      <circle cx="-9" cy="12" r="3" fill="#cbd5e1" />
+      <circle cx="-14" cy="-5" r="3" fill="#cbd5e1" />
+    </g>
+  </g>
+
+  <!-- Typography Badging -->
+  <g transform="translate(48, 55)">
+    <rect x="0" y="0" width="125" height="24" rx="12" fill="#f97316" fill-opacity="0.2" stroke="#f97316" stroke-width="1" />
+    <text x="62" y="16" fill="#fb923c" font-size="11" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-weight="700" text-anchor="middle" letter-spacing="1">ADVENTURE 4X4</text>
+    
+    <text x="0" y="58" fill="#ffffff" font-size="28" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-weight="900" letter-spacing="0.5">Mahindra Thar 4x4</text>
+    <text x="0" y="84" fill="#94a3b8" font-size="14" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-weight="600">LX Hard Top • 2.2L mHawk Diesel • Automatic 4WD</text>
+  </g>
+
+  <!-- Indian Registration Plate Badge -->
+  <g transform="translate(620, 50)">
+    <rect x="0" y="0" width="132" height="34" rx="5" fill="#fef08a" stroke="#ca8a04" stroke-width="1.5" />
+    <rect x="0" y="0" width="22" height="34" rx="4" fill="#0284c7" />
+    <text x="11" y="21" fill="#ffffff" font-size="9" font-family="monospace" font-weight="800" text-anchor="middle">IND</text>
+    <text x="77" y="23" fill="#0f172a" font-size="13" font-family="monospace" font-weight="800" text-anchor="middle" letter-spacing="1">MH 02 ER 5509</text>
+  </g>
+</svg>

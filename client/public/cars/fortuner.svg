@@ -1,0 +1,98 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 450" width="100%" height="100%">
+  <defs>
+    <linearGradient id="fortunerBg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#141414" />
+      <stop offset="100%" stop-color="#050505" />
+    </linearGradient>
+    <linearGradient id="fortunerBody" x1="0%" y1="0%" x2="100%" y2="50%">
+      <stop offset="0%" stop-color="#1e293b" />
+      <stop offset="50%" stop-color="#0f172a" />
+      <stop offset="100%" stop-color="#020617" />
+    </linearGradient>
+    <linearGradient id="fortunerGlass" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#38bdf8" stop-opacity="0.5" />
+      <stop offset="100%" stop-color="#0f172a" stop-opacity="0.9" />
+    </linearGradient>
+    <filter id="fortShadow" x="-10%" y="-10%" width="120%" height="130%">
+      <feDropShadow dx="0" dy="20" stdDeviation="22" flood-color="#000" flood-opacity="0.8" />
+    </filter>
+  </defs>
+
+  <rect width="800" height="450" fill="url(#fortunerBg)" />
+  
+  <ellipse cx="400" cy="375" rx="360" ry="24" fill="#ef4444" opacity="0.12" />
+  <ellipse cx="400" cy="370" rx="330" ry="12" fill="#000" opacity="0.75" />
+
+  <!-- Car Graphics: Toyota Fortuner Legender (Muscular High-Stance 4x4 Full-Size SUV) -->
+  <g filter="url(#fortShadow)">
+    <path d="M 110 315
+             L 125 275
+             Q 145 235 225 230
+             L 305 225
+             L 375 150
+             Q 425 142 585 145
+             L 665 152
+             Q 700 165 710 215
+             L 720 280
+             L 710 315
+             L 660 315
+             Q 648 288 610 288
+             Q 572 288 560 315
+             L 310 315
+             Q 298 288 260 288
+             Q 222 288 210 315
+             L 120 315
+             Z"
+          fill="url(#fortunerBody)" stroke="#475569" stroke-width="2" />
+
+    <!-- Sharp Aerodynamic Window Line -->
+    <path d="M 385 156 L 485 156 L 485 220 L 315 220 Z" fill="url(#fortunerGlass)" stroke="#0f172a" stroke-width="2" />
+    <path d="M 493 156 L 595 156 L 595 220 L 493 220 Z" fill="url(#fortunerGlass)" stroke="#0f172a" stroke-width="2" />
+    <path d="M 603 156 L 665 156 Q 685 160 690 190 L 690 220 L 603 220 Z" fill="url(#fortunerGlass)" stroke="#0f172a" stroke-width="2" />
+
+    <!-- Sharp Split Quad-LED Headlamps (Legender Signature) -->
+    <path d="M 120 278 Q 165 255 185 260 L 175 288 Z" fill="#e0f2fe" stroke="#ef4444" stroke-width="2" />
+    <line x1="125" y1="280" x2="165" y2="280" stroke="#f8fafc" stroke-width="4" stroke-linecap="round" />
+
+    <!-- Side Step Footboard -->
+    <rect x="330" y="318" width="210" height="8" rx="4" fill="#334155" stroke="#0f172a" stroke-width="1.5" />
+
+    <!-- Massive 18" Dual-Tone Offroad Alloy Wheels -->
+    <g transform="translate(260, 310)">
+      <circle cx="0" cy="0" r="54" fill="#0f172a" stroke="#475569" stroke-width="5" />
+      <circle cx="0" cy="0" r="37" fill="#1e293b" stroke="#cbd5e1" stroke-width="2" />
+      <line x1="0" y1="-30" x2="0" y2="30" stroke="#f8fafc" stroke-width="4" />
+      <line x1="-30" y1="0" x2="30" y2="0" stroke="#f8fafc" stroke-width="4" />
+      <line x1="-21" y1="-21" x2="21" y2="21" stroke="#f8fafc" stroke-width="4" />
+      <line x1="-21" y1="21" x2="21" y2="-21" stroke="#f8fafc" stroke-width="4" />
+      <circle cx="0" cy="0" r="10" fill="#0f172a" stroke="#cbd5e1" stroke-width="2" />
+    </g>
+
+    <g transform="translate(610, 310)">
+      <circle cx="0" cy="0" r="54" fill="#0f172a" stroke="#475569" stroke-width="5" />
+      <circle cx="0" cy="0" r="37" fill="#1e293b" stroke="#cbd5e1" stroke-width="2" />
+      <line x1="0" y1="-30" x2="0" y2="30" stroke="#f8fafc" stroke-width="4" />
+      <line x1="-30" y1="0" x2="30" y2="0" stroke="#f8fafc" stroke-width="4" />
+      <line x1="-21" y1="-21" x2="21" y2="21" stroke="#f8fafc" stroke-width="4" />
+      <line x1="-21" y1="21" x2="21" y2="-21" stroke="#f8fafc" stroke-width="4" />
+      <circle cx="0" cy="0" r="10" fill="#0f172a" stroke="#cbd5e1" stroke-width="2" />
+    </g>
+  </g>
+
+  <!-- Typography Badging -->
+  <g transform="translate(48, 55)">
+    <rect x="0" y="0" width="135" height="24" rx="12" fill="#ef4444" fill-opacity="0.2" stroke="#ef4444" stroke-width="1" />
+    <text x="67" y="16" fill="#f87171" font-size="11" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-weight="700" text-anchor="middle" letter-spacing="1">FLAGSHIP 4X4 SUV</text>
+    
+    <text x="0" y="58" fill="#ffffff" font-size="28" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-weight="900" letter-spacing="0.5">Toyota Fortuner</text>
+    <text x="0" y="84" fill="#94a3b8" font-size="14" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-weight="600">4x4 Legender • 2.8L Diesel (500 Nm) • 4WD High/Low</text>
+  </g>
+
+  <!-- Indian Registration Plate Badge -->
+  <g transform="translate(620, 50)">
+    <rect x="0" y="0" width="132" height="34" rx="5" fill="#fef08a" stroke="#ca8a04" stroke-width="1.5" />
+    <rect x="0" y="0" width="22" height="34" rx="4" fill="#0284c7" />
+    <text x="11" y="21" fill="#ffffff" font-size="9" font-family="monospace" font-weight="800" text-anchor="middle">IND</text>
+    <text x="77" y="23" fill="#0f172a" font-size="13" font-family="monospace" font-weight="800" text-anchor="middle" letter-spacing="1">MH 04 GH 7070</text>
+  </g>
+</svg>

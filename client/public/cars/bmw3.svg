@@ -1,0 +1,102 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 450" width="100%" height="100%">
+  <defs>
+    <linearGradient id="bmwBg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#111827" />
+      <stop offset="100%" stop-color="#030712" />
+    </linearGradient>
+    <linearGradient id="bmwBody" x1="0%" y1="0%" x2="100%" y2="50%">
+      <stop offset="0%" stop-color="#f8fafc" />
+      <stop offset="50%" stop-color="#f1f5f9" />
+      <stop offset="100%" stop-color="#cbd5e1" />
+    </linearGradient>
+    <linearGradient id="bmwGlass" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#38bdf8" stop-opacity="0.75" />
+      <stop offset="100%" stop-color="#0284c7" stop-opacity="0.85" />
+    </linearGradient>
+    <filter id="bmwShadow" x="-10%" y="-10%" width="120%" height="130%">
+      <feDropShadow dx="0" dy="18" stdDeviation="20" flood-color="#000" flood-opacity="0.65" />
+    </filter>
+  </defs>
+
+  <rect width="800" height="450" fill="url(#bmwBg)" />
+  
+  <ellipse cx="400" cy="370" rx="360" ry="24" fill="#3b82f6" opacity="0.18" />
+  <ellipse cx="400" cy="365" rx="320" ry="12" fill="#000" opacity="0.7" />
+
+  <!-- Car Graphics: BMW 330Li M Sport (Executive Sport Sedan Silhouette) -->
+  <g filter="url(#bmwShadow)">
+    <path d="M 110 315
+             L 120 280
+             Q 145 255 210 248
+             L 320 240
+             L 410 170
+             Q 460 160 570 162
+             L 620 168
+             Q 660 185 680 235
+             L 720 245
+             Q 730 265 725 315
+             L 670 315
+             Q 660 295 625 295
+             Q 590 295 580 315
+             L 300 315
+             Q 290 295 255 295
+             Q 220 295 210 315
+             L 115 315
+             Z"
+          fill="url(#bmwBody)" stroke="#94a3b8" stroke-width="2" />
+
+    <!-- Hofmeister Kink & Sleek Greenhouse -->
+    <path d="M 425 174 L 515 174 L 515 235 L 340 235 Z" fill="url(#bmwGlass)" stroke="#0f172a" stroke-width="2" />
+    <path d="M 525 174 L 610 174 Q 635 176 650 205 L 660 235 L 525 235 Z" fill="url(#bmwGlass)" stroke="#0f172a" stroke-width="2" />
+
+    <!-- Twin L-Shaped Laser Headlamps -->
+    <path d="M 115 282 Q 150 270 175 272 L 165 292 Z" fill="#e0f2fe" stroke="#38bdf8" stroke-width="2" />
+    <path d="M 135 285 L 150 275 L 165 280" fill="none" stroke="#0284c7" stroke-width="3" />
+
+    <!-- Sleek 3D L-Shaped LED Taillamp -->
+    <path d="M 700 248 Q 722 252 725 268 L 690 268 Z" fill="#ef4444" stroke="#991b1b" stroke-width="2" />
+
+    <!-- M Sport Aerodynamic Side Skirt -->
+    <line x1="285" y1="312" x2="595" y2="312" stroke="#1e293b" stroke-width="5" stroke-linecap="round" />
+
+    <!-- M Sport 18" Double-Spoke Alloy Wheels with Blue M Caliper -->
+    <g transform="translate(255, 310)">
+      <circle cx="0" cy="0" r="50" fill="#0f172a" stroke="#475569" stroke-width="4" />
+      <circle cx="0" cy="0" r="35" fill="#334155" stroke="#cbd5e1" stroke-width="2" />
+      <circle cx="0" cy="0" r="20" fill="#0284c7" opacity="0.6" /> <!-- M Blue brake caliper -->
+      <line x1="0" y1="-28" x2="0" y2="28" stroke="#f8fafc" stroke-width="3" />
+      <line x1="-28" y1="0" x2="28" y2="0" stroke="#f8fafc" stroke-width="3" />
+      <line x1="-20" y1="-20" x2="20" y2="20" stroke="#f8fafc" stroke-width="3" />
+      <line x1="-20" y1="20" x2="20" y2="-20" stroke="#f8fafc" stroke-width="3" />
+      <circle cx="0" cy="0" r="10" fill="#0284c7" stroke="#ffffff" stroke-width="2" />
+    </g>
+
+    <g transform="translate(625, 310)">
+      <circle cx="0" cy="0" r="50" fill="#0f172a" stroke="#475569" stroke-width="4" />
+      <circle cx="0" cy="0" r="35" fill="#334155" stroke="#cbd5e1" stroke-width="2" />
+      <circle cx="0" cy="0" r="20" fill="#0284c7" opacity="0.6" />
+      <line x1="0" y1="-28" x2="0" y2="28" stroke="#f8fafc" stroke-width="3" />
+      <line x1="-28" y1="0" x2="28" y2="0" stroke="#f8fafc" stroke-width="3" />
+      <line x1="-20" y1="-20" x2="20" y2="20" stroke="#f8fafc" stroke-width="3" />
+      <line x1="-20" y1="20" x2="20" y2="-20" stroke="#f8fafc" stroke-width="3" />
+      <circle cx="0" cy="0" r="10" fill="#0284c7" stroke="#ffffff" stroke-width="2" />
+    </g>
+  </g>
+
+  <!-- Typography Badging -->
+  <g transform="translate(48, 55)">
+    <rect x="0" y="0" width="135" height="24" rx="12" fill="#3b82f6" fill-opacity="0.2" stroke="#3b82f6" stroke-width="1" />
+    <text x="67" y="16" fill="#60a5fa" font-size="11" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-weight="700" text-anchor="middle" letter-spacing="1">LUXURY SPORT SEDAN</text>
+    
+    <text x="0" y="58" fill="#ffffff" font-size="28" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-weight="900" letter-spacing="0.5">BMW 330Li M Sport</text>
+    <text x="0" y="84" fill="#94a3b8" font-size="14" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-weight="600">Grand LWB • 258 BHP TwinPower Turbo • Panoramic Roof</text>
+  </g>
+
+  <!-- Indian Registration Plate Badge -->
+  <g transform="translate(620, 50)">
+    <rect x="0" y="0" width="132" height="34" rx="5" fill="#fef08a" stroke="#ca8a04" stroke-width="1.5" />
+    <rect x="0" y="0" width="22" height="34" rx="4" fill="#0284c7" />
+    <text x="11" y="21" fill="#ffffff" font-size="9" font-family="monospace" font-weight="800" text-anchor="middle">IND</text>
+    <text x="77" y="23" fill="#0f172a" font-size="13" font-family="monospace" font-weight="800" text-anchor="middle" letter-spacing="1">MH 12 BB 8800</text>
+  </g>
+</svg>

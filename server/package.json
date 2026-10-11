@@ -1,0 +1,30 @@
+{
+  "name": "rentdrive-server",
+  "version": "1.0.0",
+  "description": "RentDrive Vehicle Rental Database Management System - Standalone Backend API",
+  "main": "src/server.js",
+  "scripts": {
+    "start": "node src/server.js",
+    "dev": "node --watch src/server.js",
+    "test": "node --test tests/api.test.js",
+    "migrate": "node src/db/migrate.js",
+    "seed": "node src/db/seed.js"
+  },
+  "keywords": [
+    "dbms",
+    "sqlite",
+    "express",
+    "backend",
+    "api",
+    "vehicle-rental"
+  ],
+  "author": "Antigravity Engineering",
+  "license": "ISC",
+  "dependencies": {
+    "bcryptjs": "^3.0.3",
+    "cors": "^2.8.6",
+    "dotenv": "^17.3.1",
+    "express": "^5.2.1",
+    "jsonwebtoken": "^9.0.3"
+  }
+}

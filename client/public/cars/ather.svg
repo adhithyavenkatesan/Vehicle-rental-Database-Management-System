@@ -1,0 +1,88 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 450" width="100%" height="100%">
+  <defs>
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#141923" />
+      <stop offset="100%" stop-color="#0a0d14" />
+    </linearGradient>
+    <linearGradient id="atherGreen" x1="0%" y1="0%" x2="100%" y2="50%">
+      <stop offset="0%" stop-color="#10b981" />
+      <stop offset="100%" stop-color="#059669" />
+    </linearGradient>
+    <linearGradient id="matteWhite" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#f8fafc" />
+      <stop offset="70%" stop-color="#e2e8f0" />
+      <stop offset="100%" stop-color="#cbd5e1" />
+    </linearGradient>
+    <filter id="scooterShadow" x="-10%" y="-10%" width="120%" height="130%">
+      <feDropShadow dx="0" dy="16" stdDeviation="18" flood-color="#000" flood-opacity="0.65" />
+    </filter>
+  </defs>
+
+  <rect width="800" height="450" fill="url(#bgGrad)" />
+  <g opacity="0.05" stroke="#94a3b8" stroke-width="1">
+    <line x1="0" y1="100" x2="800" y2="100" />
+    <line x1="0" y1="200" x2="800" y2="200" />
+    <line x1="0" y1="300" x2="800" y2="300" />
+  </g>
+
+  <g transform="translate(48, 48)">
+    <rect x="0" y="0" width="220" height="32" rx="6" fill="#1e293b" stroke="#334155" stroke-width="1" />
+    <text x="14" y="21" fill="#f8fafc" font-family="'Plus Jakarta Sans', sans-serif" font-weight="800" font-size="13" letter-spacing="1.5">ATHER 450X GEN 3</text>
+    <circle cx="198" cy="16" r="4" fill="#10b981" />
+  </g>
+  <text x="752" y="52" fill="#64748b" font-family="'Plus Jakarta Sans', sans-serif" font-weight="700" font-size="14" text-anchor="end">ELECTRIC SMART SCOOTER</text>
+
+  <ellipse cx="400" cy="385" rx="270" ry="20" fill="#000" opacity="0.6" filter="blur(8px)" />
+
+  <g filter="url(#scooterShadow)">
+    <!-- Rear Wheel with Green Alloy Rim Ring -->
+    <g transform="translate(240, 325)">
+      <circle cx="0" cy="0" r="58" fill="#0f172a" stroke="#1e293b" stroke-width="10" />
+      <circle cx="0" cy="0" r="42" fill="none" stroke="url(#atherGreen)" stroke-width="4" />
+      <circle cx="0" cy="0" r="16" fill="#334155" />
+    </g>
+
+    <!-- Front Wheel with Green Alloy Rim Ring -->
+    <g transform="translate(560, 325)">
+      <circle cx="0" cy="0" r="58" fill="#0f172a" stroke="#1e293b" stroke-width="10" />
+      <circle cx="0" cy="0" r="42" fill="none" stroke="url(#atherGreen)" stroke-width="4" />
+      <circle cx="0" cy="0" r="16" fill="#334155" />
+      <circle cx="0" cy="0" r="30" fill="none" stroke="#94a3b8" stroke-width="2" stroke-dasharray="4,4" />
+    </g>
+
+    <!-- Electric Motor & Belt Drive Enclosure -->
+    <rect x="250" y="305" width="90" height="30" rx="8" fill="#0f172a" stroke="#10b981" stroke-width="2" />
+    <circle cx="310" cy="320" r="9" fill="#10b981" />
+
+    <!-- Sharp Angular Body Panel -->
+    <path d="M210 270 L340 215 L400 220 L370 290 L230 305 Z" fill="url(#matteWhite)" stroke="#cbd5e1" stroke-width="1.5" />
+    <!-- Ather Neon Green Accent Streak -->
+    <path d="M260 250 L350 228 L345 235 L265 258 Z" fill="url(#atherGreen)" />
+
+    <!-- Minimalist Sport Seat -->
+    <path d="M240 215 L380 210 L410 225 L250 230 Z" fill="#020617" stroke="#334155" stroke-width="2" />
+
+    <!-- Exposed Aluminum Trellis Subframe Section -->
+    <line x1="330" y1="235" x2="370" y2="280" stroke="url(#atherGreen)" stroke-width="6" stroke-linecap="round" />
+
+    <!-- Floorboard Deck with Battery Underneath -->
+    <path d="M370 290 L480 290 L500 255 L390 255 Z" fill="#1e293b" stroke="#334155" stroke-width="1.5" />
+
+    <!-- Sharp Front Apron -->
+    <path d="M475 290 L505 240 L530 180 L575 190 L560 310 L500 310 Z" fill="url(#matteWhite)" stroke="#cbd5e1" stroke-width="1.5" />
+    <!-- Angular LED Headlight Cluster in Apron -->
+    <polygon points="535,210 560,215 545,230" fill="#38bdf8" />
+    <polygon points="538,212 555,216 546,225" fill="#f8fafc" />
+
+    <!-- Front Telescopic Suspension -->
+    <line x1="535" y1="240" x2="560" y2="325" stroke="#475569" stroke-width="7" stroke-linecap="round" />
+
+    <!-- Handlebar with 7-Inch Smart Touchscreen Dashboard -->
+    <path d="M495 155 L545 160 L535 180 L505 178 Z" fill="#0f172a" stroke="#334155" stroke-width="1.5" />
+    <!-- Touchscreen display glowing cyan -->
+    <rect x="502" y="152" width="22" height="12" rx="2" fill="#06b6d4" opacity="0.9" />
+    <!-- Sporty Sleek Mirrors -->
+    <circle cx="485" cy="135" r="7" fill="#0f172a" stroke="#10b981" stroke-width="1.5" />
+    <line x1="488" y1="142" x2="498" y2="155" stroke="#64748b" stroke-width="3" />
+  </g>
+</svg>

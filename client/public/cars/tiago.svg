@@ -1,0 +1,93 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 450" width="100%" height="100%">
+  <defs>
+    <linearGradient id="tiagoBg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#1e293b" />
+      <stop offset="100%" stop-color="#064e3b" />
+    </linearGradient>
+    <linearGradient id="tiagoBody" x1="0%" y1="0%" x2="100%" y2="50%">
+      <stop offset="0%" stop-color="#64748b" />
+      <stop offset="50%" stop-color="#475569" />
+      <stop offset="100%" stop-color="#334155" />
+    </linearGradient>
+    <linearGradient id="glassTiago" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#5eead4" stop-opacity="0.6" />
+      <stop offset="100%" stop-color="#0f766e" stop-opacity="0.8" />
+    </linearGradient>
+    <filter id="tiagoShadow" x="-10%" y="-10%" width="120%" height="130%">
+      <feDropShadow dx="0" dy="16" stdDeviation="18" flood-color="#000" flood-opacity="0.6" />
+    </filter>
+  </defs>
+
+  <rect width="800" height="450" fill="url(#tiagoBg)" />
+  
+  <ellipse cx="400" cy="365" rx="350" ry="24" fill="#14b8a6" opacity="0.18" />
+  <ellipse cx="400" cy="360" rx="300" ry="12" fill="#000" opacity="0.6" />
+
+  <!-- Car Graphics: Tata Tiago EV (Compact City Electric Hatchback) -->
+  <g filter="url(#tiagoShadow)">
+    <path d="M 130 315
+             L 145 285
+             Q 165 255 220 250
+             L 305 245
+             L 395 175
+             Q 430 162 550 165
+             L 595 168
+             Q 640 175 660 225
+             L 695 275
+             L 690 315
+             L 645 315
+             Q 635 295 600 295
+             Q 565 295 555 315
+             L 310 315
+             Q 300 295 265 295
+             Q 230 295 220 315
+             L 145 315
+             Z"
+          fill="url(#tiagoBody)" stroke="#94a3b8" stroke-width="2" />
+
+    <!-- Contrast Black Roof with EV Teal Humanity Line -->
+    <path d="M 390 175 L 415 162 Q 450 152 555 155 L 598 160 Q 640 168 650 205 L 638 205 Q 625 172 585 170 L 415 170 Z" fill="#0f172a" />
+    <line x1="140" y1="285" x2="220" y2="280" stroke="#2dd4bf" stroke-width="3" stroke-linecap="round" />
+
+    <!-- Windows -->
+    <path d="M 405 176 L 485 176 L 485 238 L 330 238 Z" fill="url(#glassTiago)" stroke="#0f172a" stroke-width="2" />
+    <path d="M 493 176 L 585 176 Q 620 180 635 220 L 635 238 L 493 238 Z" fill="url(#glassTiago)" stroke="#0f172a" stroke-width="2" />
+
+    <!-- Projector Headlamps -->
+    <path d="M 135 292 Q 165 280 185 285 L 175 302 Z" fill="#e0f2fe" stroke="#38bdf8" stroke-width="2" />
+
+    <!-- Wheels with EV Hyperdrive Wheel Covers -->
+    <g transform="translate(260, 305)">
+      <circle cx="0" cy="0" r="48" fill="#0f172a" stroke="#2dd4bf" stroke-width="3" />
+      <circle cx="0" cy="0" r="32" fill="#1e293b" stroke="#cbd5e1" stroke-width="2" />
+      <line x1="0" y1="-26" x2="0" y2="26" stroke="#2dd4bf" stroke-width="4" />
+      <line x1="-26" y1="0" x2="26" y2="0" stroke="#f8fafc" stroke-width="4" />
+      <circle cx="0" cy="0" r="9" fill="#042f2e" stroke="#5eead4" stroke-width="2" />
+    </g>
+
+    <g transform="translate(600, 305)">
+      <circle cx="0" cy="0" r="48" fill="#0f172a" stroke="#2dd4bf" stroke-width="3" />
+      <circle cx="0" cy="0" r="32" fill="#1e293b" stroke="#cbd5e1" stroke-width="2" />
+      <line x1="0" y1="-26" x2="0" y2="26" stroke="#2dd4bf" stroke-width="4" />
+      <line x1="-26" y1="0" x2="26" y2="0" stroke="#f8fafc" stroke-width="4" />
+      <circle cx="0" cy="0" r="9" fill="#042f2e" stroke="#5eead4" stroke-width="2" />
+    </g>
+  </g>
+
+  <!-- Typography Badging -->
+  <g transform="translate(48, 55)">
+    <rect x="0" y="0" width="135" height="24" rx="12" fill="#14b8a6" fill-opacity="0.2" stroke="#14b8a6" stroke-width="1" />
+    <text x="67" y="16" fill="#2dd4bf" font-size="11" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-weight="700" text-anchor="middle" letter-spacing="1">ELECTRIC COMMUTER</text>
+    
+    <text x="0" y="58" fill="#ffffff" font-size="28" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-weight="900" letter-spacing="0.5">Tata Tiago.ev</text>
+    <text x="0" y="84" fill="#94a3b8" font-size="14" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-weight="600">XZ+ Tech Lux • 315 km Range • Automatic Single Speed</text>
+  </g>
+
+  <!-- Indian Registration Plate Badge (Green EV Plate) -->
+  <g transform="translate(620, 50)">
+    <rect x="0" y="0" width="132" height="34" rx="5" fill="#15803d" stroke="#16a34a" stroke-width="1.5" />
+    <rect x="0" y="0" width="22" height="34" rx="4" fill="#0284c7" />
+    <text x="11" y="21" fill="#ffffff" font-size="9" font-family="monospace" font-weight="800" text-anchor="middle">IND</text>
+    <text x="77" y="23" fill="#ffffff" font-size="13" font-family="monospace" font-weight="800" text-anchor="middle" letter-spacing="1">DL 08 EF 1212</text>
+  </g>
+</svg>

@@ -1,0 +1,77 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 450" width="100%" height="100%">
+  <defs>
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#141923" />
+      <stop offset="100%" stop-color="#0a0d14" />
+    </linearGradient>
+    <linearGradient id="ktmOrange" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#f97316" />
+      <stop offset="100%" stop-color="#ea580c" />
+    </linearGradient>
+    <filter id="bikeShadow" x="-10%" y="-10%" width="120%" height="130%">
+      <feDropShadow dx="0" dy="18" stdDeviation="20" flood-color="#000" flood-opacity="0.7" />
+    </filter>
+  </defs>
+
+  <rect width="800" height="450" fill="url(#bgGrad)" />
+  <g opacity="0.05" stroke="#94a3b8" stroke-width="1">
+    <line x1="0" y1="100" x2="800" y2="100" />
+    <line x1="0" y1="200" x2="800" y2="200" />
+    <line x1="0" y1="300" x2="800" y2="300" />
+  </g>
+
+  <g transform="translate(48, 48)">
+    <rect x="0" y="0" width="220" height="32" rx="6" fill="#1e293b" stroke="#334155" stroke-width="1" />
+    <text x="14" y="21" fill="#f8fafc" font-family="'Plus Jakarta Sans', sans-serif" font-weight="800" font-size="13" letter-spacing="1.5">KTM 390 DUKE</text>
+    <circle cx="198" cy="16" r="4" fill="#f97316" />
+  </g>
+  <text x="752" y="52" fill="#64748b" font-family="'Plus Jakarta Sans', sans-serif" font-weight="700" font-size="14" text-anchor="end">NAKED STREETFIGHTER</text>
+
+  <ellipse cx="400" cy="385" rx="280" ry="22" fill="#000" opacity="0.6" filter="blur(8px)" />
+
+  <g filter="url(#bikeShadow)">
+    <!-- Rear Wheel with Orange Alloys -->
+    <g transform="translate(230, 310)">
+      <circle cx="0" cy="0" r="72" fill="#0f172a" stroke="#1e293b" stroke-width="12" />
+      <circle cx="0" cy="0" r="54" fill="none" stroke="url(#ktmOrange)" stroke-width="6" />
+      <line x1="-50" y1="0" x2="50" y2="0" stroke="url(#ktmOrange)" stroke-width="6" />
+      <line x1="0" y1="-50" x2="0" y2="50" stroke="url(#ktmOrange)" stroke-width="6" />
+      <circle cx="0" cy="0" r="20" fill="#0f172a" />
+    </g>
+
+    <!-- Front Wheel with Orange Alloys -->
+    <g transform="translate(570, 310)">
+      <circle cx="0" cy="0" r="72" fill="#0f172a" stroke="#1e293b" stroke-width="12" />
+      <circle cx="0" cy="0" r="54" fill="none" stroke="url(#ktmOrange)" stroke-width="6" />
+      <line x1="-50" y1="0" x2="50" y2="0" stroke="url(#ktmOrange)" stroke-width="6" />
+      <line x1="0" y1="-50" x2="0" y2="50" stroke="url(#ktmOrange)" stroke-width="6" />
+      <circle cx="0" cy="0" r="20" fill="#0f172a" />
+      <circle cx="0" cy="0" r="40" fill="none" stroke="#94a3b8" stroke-width="3" stroke-dasharray="8,4" />
+    </g>
+
+    <!-- WP Apex Inverted Front Forks -->
+    <line x1="515" y1="180" x2="570" y2="310" stroke="#1e293b" stroke-width="12" stroke-linecap="round" />
+
+    <!-- Exposed Orange Steel Trellis Frame -->
+    <line x1="330" y1="280" x2="420" y2="230" stroke="url(#ktmOrange)" stroke-width="10" stroke-linecap="round" />
+    <line x1="420" y1="230" x2="490" y2="190" stroke="url(#ktmOrange)" stroke-width="10" stroke-linecap="round" />
+    <line x1="330" y1="280" x2="440" y2="290" stroke="url(#ktmOrange)" stroke-width="8" stroke-linecap="round" />
+    <line x1="440" y1="290" x2="490" y2="190" stroke="url(#ktmOrange)" stroke-width="8" stroke-linecap="round" />
+
+    <!-- Engine -->
+    <rect x="360" y="260" width="85" height="55" rx="8" fill="#1e293b" stroke="#334155" stroke-width="2" />
+    <circle cx="400" cy="285" r="14" fill="#0f172a" stroke="#475569" stroke-width="2" />
+
+    <!-- Muscular Sculpted Fuel Tank & Shrouds -->
+    <path d="M380 205 C400 165, 450 165, 490 185 L530 220 L450 235 Z" fill="#f8fafc" stroke="#cbd5e1" stroke-width="2" />
+    <polygon points="460,195 530,220 480,245" fill="url(#ktmOrange)" />
+
+    <!-- Split LED Beast Headlight -->
+    <polygon points="535,175 565,185 540,205 525,190" fill="#020617" stroke="#334155" stroke-width="2" />
+    <polygon points="545,183 560,188 545,195" fill="#38bdf8" />
+
+    <!-- Aggressive Tail Section -->
+    <path d="M260 220 L370 215 L380 235 L280 250 Z" fill="#0f172a" stroke="url(#ktmOrange)" stroke-width="2" />
+    <path d="M330 215 C350 208, 380 212, 385 225 L340 230 Z" fill="#020617" />
+  </g>
+</svg>

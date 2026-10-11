@@ -1,0 +1,163 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 450" width="100%" height="100%">
+  <defs>
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#141923" />
+      <stop offset="100%" stop-color="#0a0d14" />
+    </linearGradient>
+    <linearGradient id="carBody" x1="0%" y1="0%" x2="100%" y2="50%">
+      <stop offset="0%" stop-color="#f8fafc" />
+      <stop offset="50%" stop-color="#e2e8f0" />
+      <stop offset="100%" stop-color="#cbd5e1" />
+    </linearGradient>
+    <linearGradient id="roofGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#0f172a" />
+      <stop offset="100%" stop-color="#1e293b" />
+    </linearGradient>
+    <linearGradient id="glassGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#38bdf8" stop-opacity="0.75" />
+      <stop offset="100%" stop-color="#0369a1" stop-opacity="0.85" />
+    </linearGradient>
+    <linearGradient id="wheelGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#334155" />
+      <stop offset="100%" stop-color="#0f172a" />
+    </linearGradient>
+    <radialGradient id="rimGrad" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#cbd5e1" />
+      <stop offset="70%" stop-color="#64748b" />
+      <stop offset="100%" stop-color="#1e293b" />
+    </radialGradient>
+    <filter id="shadow" x="-10%" y="-10%" width="120%" height="130%">
+      <feDropShadow dx="0" dy="16" stdDeviation="18" flood-color="#000" flood-opacity="0.6" />
+    </filter>
+  </defs>
+
+  <!-- Background Canvas -->
+  <rect width="800" height="450" fill="url(#bgGrad)" />
+  
+  <!-- Subtle Grid Accent -->
+  <g opacity="0.06" stroke="#94a3b8" stroke-width="1">
+    <line x1="0" y1="90" x2="800" y2="90" />
+    <line x1="0" y1="180" x2="800" y2="180" />
+    <line x1="0" y1="270" x2="800" y2="270" />
+    <line x1="0" y1="360" x2="800" y2="360" />
+    <line x1="200" y1="0" x2="200" y2="450" />
+    <line x1="400" y1="0" x2="400" y2="450" />
+    <line x1="600" y1="0" x2="600" y2="450" />
+  </g>
+
+  <!-- Ground Studio Glow -->
+  <ellipse cx="400" cy="365" rx="350" ry="24" fill="#6366f1" opacity="0.15" />
+  <ellipse cx="400" cy="360" rx="310" ry="12" fill="#000" opacity="0.6" />
+
+  <!-- Car Graphics: Maruti Suzuki Swift (Hatchback Silhouette) -->
+  <g filter="url(#shadow)">
+    <!-- Main Body Shell -->
+    <path d="M 120 315 
+             L 135 290 
+             Q 150 260 210 252 
+             L 300 248 
+             L 390 175 
+             Q 430 162 550 162 
+             L 600 165 
+             Q 645 170 665 220 
+             L 700 270 
+             Q 715 285 710 315 
+             L 660 320 
+             Q 640 320 635 305
+             A 55 55 0 0 0 525 305
+             Q 520 320 480 320
+             L 310 320
+             Q 305 320 300 305
+             A 55 55 0 0 0 190 305
+             Q 185 320 140 320
+             Z" 
+          fill="url(#carBody)" stroke="#94a3b8" stroke-width="2" />
+
+    <!-- Contrast Floating Black Roof -->
+    <path d="M 385 177 
+             L 405 163 
+             Q 450 152 560 154 
+             L 605 158 
+             Q 645 163 658 205
+             L 645 205
+             Q 630 172 590 170
+             L 420 170
+             Z" 
+          fill="url(#roofGrad)" />
+
+    <!-- Aerodynamic Windows & Glass -->
+    <path d="M 405 178 
+             L 485 178 
+             L 485 240 
+             L 330 240 
+             Z" 
+          fill="url(#glassGrad)" stroke="#1e293b" stroke-width="3" />
+    <path d="M 495 178 
+             L 590 178 
+             Q 625 180 635 220
+             L 640 240 
+             L 495 240 
+             Z" 
+          fill="url(#glassGrad)" stroke="#1e293b" stroke-width="3" />
+
+    <!-- Window Pillars (A, B, C) -->
+    <line x1="488" y1="175" x2="488" y2="242" stroke="#0f172a" stroke-width="8" stroke-linecap="round" />
+    <line x1="392" y1="175" x2="325" y2="242" stroke="#0f172a" stroke-width="9" stroke-linecap="round" />
+
+    <!-- LED Projector Headlamp -->
+    <path d="M 125 295 Q 160 285 180 290 Q 165 305 130 308 Z" fill="#e0f2fe" stroke="#38bdf8" stroke-width="2" />
+    <circle cx="150" cy="298" r="6" fill="#38bdf8" />
+
+    <!-- LED Taillamp -->
+    <path d="M 685 260 Q 705 270 708 285 L 680 288 Z" fill="#ef4444" stroke="#b91c1c" stroke-width="2" />
+
+    <!-- Sporty Door Crease & Handle -->
+    <line x1="280" y1="260" x2="460" y2="260" stroke="#94a3b8" stroke-width="2" stroke-linecap="round" opacity="0.6" />
+    <line x1="495" y1="260" x2="620" y2="258" stroke="#94a3b8" stroke-width="2" stroke-linecap="round" opacity="0.6" />
+    <rect x="360" y="252" width="22" height="5" rx="2" fill="#475569" />
+    <!-- Concealed Rear Door Handle in C-Pillar (Swift signature) -->
+    <rect x="625" y="210" width="8" height="20" rx="3" fill="#0f172a" />
+
+    <!-- Front & Rear Dual-Tone Alloy Wheels -->
+    <!-- Front Wheel -->
+    <g transform="translate(245, 305)">
+      <circle cx="0" cy="0" r="50" fill="url(#wheelGrad)" stroke="#475569" stroke-width="4" />
+      <circle cx="0" cy="0" r="34" fill="url(#rimGrad)" stroke="#94a3b8" stroke-width="2" />
+      <!-- 5-Spoke Precision Cut Alloy Design -->
+      <line x1="0" y1="-28" x2="0" y2="28" stroke="#f8fafc" stroke-width="5" />
+      <line x1="-26" y1="-9" x2="26" y2="9" stroke="#f8fafc" stroke-width="5" />
+      <line x1="-16" y1="23" x2="16" y2="-23" stroke="#f8fafc" stroke-width="5" />
+      <circle cx="0" cy="0" r="10" fill="#0f172a" stroke="#cbd5e1" stroke-width="2" />
+      <circle cx="0" cy="0" r="4" fill="#f43f5e" />
+    </g>
+
+    <!-- Rear Wheel -->
+    <g transform="translate(580, 305)">
+      <circle cx="0" cy="0" r="50" fill="url(#wheelGrad)" stroke="#475569" stroke-width="4" />
+      <circle cx="0" cy="0" r="34" fill="url(#rimGrad)" stroke="#94a3b8" stroke-width="2" />
+      <!-- 5-Spoke Precision Cut Alloy Design -->
+      <line x1="0" y1="-28" x2="0" y2="28" stroke="#f8fafc" stroke-width="5" />
+      <line x1="-26" y1="-9" x2="26" y2="9" stroke="#f8fafc" stroke-width="5" />
+      <line x1="-16" y1="23" x2="16" y2="-23" stroke="#f8fafc" stroke-width="5" />
+      <circle cx="0" cy="0" r="10" fill="#0f172a" stroke="#cbd5e1" stroke-width="2" />
+      <circle cx="0" cy="0" r="4" fill="#f43f5e" />
+    </g>
+  </g>
+
+  <!-- Typography Badging & Model Name -->
+  <g transform="translate(48, 55)">
+    <rect x="0" y="0" width="135" height="24" rx="12" fill="#3b82f6" fill-opacity="0.2" stroke="#3b82f6" stroke-width="1" />
+    <text x="67" y="16" fill="#60a5fa" font-size="11" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-weight="700" text-anchor="middle" letter-spacing="1">HATCHBACK</text>
+    
+    <text x="0" y="58" fill="#ffffff" font-size="28" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-weight="900" letter-spacing="0.5">Maruti Suzuki Swift</text>
+    <text x="0" y="84" fill="#94a3b8" font-size="14" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-weight="600">ZXi+ Dual Tone • 1.2L DualJet Petrol • Manual</text>
+  </g>
+
+  <!-- Indian Registration Plate Badge -->
+  <g transform="translate(620, 50)">
+    <rect x="0" y="0" width="132" height="34" rx="5" fill="#fef08a" stroke="#ca8a04" stroke-width="1.5" />
+    <rect x="0" y="0" width="22" height="34" rx="4" fill="#0284c7" />
+    <text x="11" y="21" fill="#ffffff" font-size="9" font-family="monospace" font-weight="800" text-anchor="middle">IND</text>
+    <text x="77" y="23" fill="#0f172a" font-size="13" font-family="monospace" font-weight="800" text-anchor="middle" letter-spacing="1">DL 01 AB 4455</text>
+  </g>
+</svg>

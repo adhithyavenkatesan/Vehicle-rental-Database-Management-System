@@ -1,0 +1,100 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 450" width="100%" height="100%">
+  <defs>
+    <linearGradient id="xuvBg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0f172a" />
+      <stop offset="100%" stop-color="#021430" />
+    </linearGradient>
+    <linearGradient id="xuvBody" x1="0%" y1="0%" x2="100%" y2="50%">
+      <stop offset="0%" stop-color="#2563eb" />
+      <stop offset="50%" stop-color="#1d4ed8" />
+      <stop offset="100%" stop-color="#1e3a8a" />
+    </linearGradient>
+    <linearGradient id="xuvGlass" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#60a5fa" stop-opacity="0.6" />
+      <stop offset="100%" stop-color="#1e40af" stop-opacity="0.8" />
+    </linearGradient>
+    <filter id="xuvShadow" x="-10%" y="-10%" width="120%" height="130%">
+      <feDropShadow dx="0" dy="18" stdDeviation="20" flood-color="#000" flood-opacity="0.65" />
+    </filter>
+  </defs>
+
+  <rect width="800" height="450" fill="url(#xuvBg)" />
+  
+  <ellipse cx="400" cy="370" rx="360" ry="24" fill="#3b82f6" opacity="0.2" />
+  <ellipse cx="400" cy="365" rx="320" ry="12" fill="#000" opacity="0.65" />
+
+  <!-- Car Graphics: Mahindra XUV700 (Flagship 7-Seater AWD SUV) -->
+  <g filter="url(#xuvShadow)">
+    <path d="M 115 315
+             L 130 280
+             Q 155 240 230 235
+             L 310 230
+             L 380 155
+             Q 430 148 580 152
+             L 660 158
+             Q 695 170 705 220
+             L 715 285
+             L 705 315
+             L 655 315
+             Q 645 290 610 290
+             Q 575 290 565 315
+             L 310 315
+             Q 300 290 265 290
+             Q 230 290 220 315
+             L 130 315
+             Z"
+          fill="url(#xuvBody)" stroke="#60a5fa" stroke-width="2" />
+
+    <!-- Sleek Window Line (3-Row Panoramic) -->
+    <path d="M 390 162 L 485 162 L 485 225 L 320 225 Z" fill="url(#xuvGlass)" stroke="#0f172a" stroke-width="2" />
+    <path d="M 493 162 L 590 162 L 590 225 L 493 225 Z" fill="url(#xuvGlass)" stroke="#0f172a" stroke-width="2" />
+    <path d="M 598 162 L 660 162 Q 680 165 685 195 L 685 225 L 598 225 Z" fill="url(#xuvGlass)" stroke="#0f172a" stroke-width="2" />
+
+    <!-- Iconic C-Shaped Extended LED DRLs -->
+    <path d="M 125 285 Q 165 260 185 265 L 180 295" fill="none" stroke="#93c5fd" stroke-width="4" stroke-linecap="round" />
+    <circle cx="130" cy="285" r="4" fill="#ffffff" />
+
+    <!-- Flush Smart Door Handles (XUV700 Signature) -->
+    <rect x="380" y="235" width="22" height="4" rx="2" fill="#93c5fd" />
+    <rect x="510" y="235" width="22" height="4" rx="2" fill="#93c5fd" />
+
+    <!-- Arrowhead LED Taillamps -->
+    <path d="M 695 240 L 712 250 L 705 275 Z" fill="#ef4444" stroke="#991b1b" stroke-width="2" />
+
+    <!-- 18" Diamond Cut Alloys -->
+    <g transform="translate(265, 305)">
+      <circle cx="0" cy="0" r="52" fill="#0f172a" stroke="#475569" stroke-width="4" />
+      <circle cx="0" cy="0" r="35" fill="#334155" stroke="#cbd5e1" stroke-width="2" />
+      <line x1="0" y1="-30" x2="0" y2="30" stroke="#f8fafc" stroke-width="4" />
+      <line x1="-28" y1="-10" x2="28" y2="10" stroke="#f8fafc" stroke-width="4" />
+      <line x1="-18" y1="24" x2="18" y2="-24" stroke="#f8fafc" stroke-width="4" />
+      <circle cx="0" cy="0" r="10" fill="#0f172a" stroke="#cbd5e1" stroke-width="2" />
+    </g>
+
+    <g transform="translate(610, 305)">
+      <circle cx="0" cy="0" r="52" fill="#0f172a" stroke="#475569" stroke-width="4" />
+      <circle cx="0" cy="0" r="35" fill="#334155" stroke="#cbd5e1" stroke-width="2" />
+      <line x1="0" y1="-30" x2="0" y2="30" stroke="#f8fafc" stroke-width="4" />
+      <line x1="-28" y1="-10" x2="28" y2="10" stroke="#f8fafc" stroke-width="4" />
+      <line x1="-18" y1="24" x2="18" y2="-24" stroke="#f8fafc" stroke-width="4" />
+      <circle cx="0" cy="0" r="10" fill="#0f172a" stroke="#cbd5e1" stroke-width="2" />
+    </g>
+  </g>
+
+  <!-- Typography Badging -->
+  <g transform="translate(48, 55)">
+    <rect x="0" y="0" width="135" height="24" rx="12" fill="#2563eb" fill-opacity="0.2" stroke="#2563eb" stroke-width="1" />
+    <text x="67" y="16" fill="#60a5fa" font-size="11" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-weight="700" text-anchor="middle" letter-spacing="1">FLAGSHIP SUV (AWD)</text>
+    
+    <text x="0" y="58" fill="#ffffff" font-size="28" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-weight="900" letter-spacing="0.5">Mahindra XUV700</text>
+    <text x="0" y="84" fill="#94a3b8" font-size="14" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-weight="600">AX7 Luxury AWD • 2.2L mHawk Diesel (185 PS) • ADAS</text>
+  </g>
+
+  <!-- Indian Registration Plate Badge -->
+  <g transform="translate(620, 50)">
+    <rect x="0" y="0" width="132" height="34" rx="5" fill="#fef08a" stroke="#ca8a04" stroke-width="1.5" />
+    <rect x="0" y="0" width="22" height="34" rx="4" fill="#0284c7" />
+    <text x="11" y="21" fill="#ffffff" font-size="9" font-family="monospace" font-weight="800" text-anchor="middle">IND</text>
+    <text x="77" y="23" fill="#0f172a" font-size="13" font-family="monospace" font-weight="800" text-anchor="middle" letter-spacing="1">KA 01 TR 9191</text>
+  </g>
+</svg>

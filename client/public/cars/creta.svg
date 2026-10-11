@@ -1,0 +1,95 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 450" width="100%" height="100%">
+  <defs>
+    <linearGradient id="cretaBg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#181c24" />
+      <stop offset="100%" stop-color="#0a0c10" />
+    </linearGradient>
+    <linearGradient id="cretaBody" x1="0%" y1="0%" x2="100%" y2="50%">
+      <stop offset="0%" stop-color="#475569" />
+      <stop offset="50%" stop-color="#334155" />
+      <stop offset="100%" stop-color="#1e293b" />
+    </linearGradient>
+    <linearGradient id="cretaGlass" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#38bdf8" stop-opacity="0.6" />
+      <stop offset="100%" stop-color="#0369a1" stop-opacity="0.8" />
+    </linearGradient>
+    <filter id="cretaShadow" x="-10%" y="-10%" width="120%" height="130%">
+      <feDropShadow dx="0" dy="18" stdDeviation="20" flood-color="#000" flood-opacity="0.65" />
+    </filter>
+  </defs>
+
+  <rect width="800" height="450" fill="url(#cretaBg)" />
+  
+  <ellipse cx="400" cy="370" rx="360" ry="24" fill="#38bdf8" opacity="0.14" />
+  <ellipse cx="400" cy="365" rx="320" ry="12" fill="#000" opacity="0.65" />
+
+  <!-- Car Graphics: Hyundai Creta (Parametric Urban SUV) -->
+  <g filter="url(#cretaShadow)">
+    <path d="M 120 315
+             L 135 285
+             L 190 250
+             L 290 240
+             L 375 165
+             Q 420 155 570 158
+             L 635 165
+             Q 675 175 690 230
+             L 715 280
+             L 705 315
+             L 655 315
+             Q 645 295 610 295
+             Q 575 295 565 315
+             L 310 315
+             Q 300 295 265 295
+             Q 230 295 220 315
+             L 135 315
+             Z"
+          fill="url(#cretaBody)" stroke="#64748b" stroke-width="2" />
+
+    <!-- Silver Lightning C-Pillar Arch (Creta Trademark) -->
+    <path d="M 580 156 Q 640 162 660 215 L 640 220 Q 625 175 580 165 Z" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1.5" />
+
+    <!-- Sleek Window Line -->
+    <path d="M 385 168 L 475 168 L 475 230 L 310 230 Z" fill="url(#cretaGlass)" stroke="#0f172a" stroke-width="2" />
+    <path d="M 483 168 L 575 168 L 575 230 L 483 230 Z" fill="url(#cretaGlass)" stroke="#0f172a" stroke-width="2" />
+
+    <!-- Horizon LED DRLs -->
+    <line x1="125" y1="270" x2="195" y2="260" stroke="#f8fafc" stroke-width="4" stroke-linecap="round" />
+    <rect x="135" y="278" width="22" height="15" rx="3" fill="#e0f2fe" stroke="#38bdf8" stroke-width="1.5" />
+
+    <!-- Wheels (Diamond-cut Alloys) -->
+    <g transform="translate(265, 310)">
+      <circle cx="0" cy="0" r="50" fill="#0f172a" stroke="#475569" stroke-width="4" />
+      <circle cx="0" cy="0" r="34" fill="#334155" stroke="#94a3b8" stroke-width="2" />
+      <line x1="0" y1="-28" x2="0" y2="28" stroke="#f8fafc" stroke-width="5" />
+      <line x1="-26" y1="-9" x2="26" y2="9" stroke="#f8fafc" stroke-width="5" />
+      <line x1="-16" y1="23" x2="16" y2="-23" stroke="#f8fafc" stroke-width="5" />
+      <circle cx="0" cy="0" r="10" fill="#0f172a" stroke="#cbd5e1" stroke-width="2" />
+    </g>
+
+    <g transform="translate(610, 310)">
+      <circle cx="0" cy="0" r="50" fill="#0f172a" stroke="#475569" stroke-width="4" />
+      <circle cx="0" cy="0" r="34" fill="#334155" stroke="#94a3b8" stroke-width="2" />
+      <line x1="0" y1="-28" x2="0" y2="28" stroke="#f8fafc" stroke-width="5" />
+      <line x1="-26" y1="-9" x2="26" y2="9" stroke="#f8fafc" stroke-width="5" />
+      <line x1="-16" y1="23" x2="16" y2="-23" stroke="#f8fafc" stroke-width="5" />
+      <circle cx="0" cy="0" r="10" fill="#0f172a" stroke="#cbd5e1" stroke-width="2" />
+    </g>
+  </g>
+
+  <!-- Typography Badging -->
+  <g transform="translate(48, 55)">
+    <rect x="0" y="0" width="135" height="24" rx="12" fill="#38bdf8" fill-opacity="0.2" stroke="#38bdf8" stroke-width="1" />
+    <text x="67" y="16" fill="#7dd3fc" font-size="11" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-weight="700" text-anchor="middle" letter-spacing="1">COMPACT SUV</text>
+    
+    <text x="0" y="58" fill="#ffffff" font-size="28" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-weight="900" letter-spacing="0.5">Hyundai Creta</text>
+    <text x="0" y="84" fill="#94a3b8" font-size="14" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-weight="600">SX(O) 1.5 Turbo DCT • Panoramic Sunroof • ADAS Level 2</text>
+  </g>
+
+  <!-- Indian Registration Plate Badge -->
+  <g transform="translate(620, 50)">
+    <rect x="0" y="0" width="132" height="34" rx="5" fill="#fef08a" stroke="#ca8a04" stroke-width="1.5" />
+    <rect x="0" y="0" width="22" height="34" rx="4" fill="#0284c7" />
+    <text x="11" y="21" fill="#ffffff" font-size="9" font-family="monospace" font-weight="800" text-anchor="middle">IND</text>
+    <text x="77" y="23" fill="#0f172a" font-size="13" font-family="monospace" font-weight="800" text-anchor="middle" letter-spacing="1">DL 03 CK 7890</text>
+  </g>
+</svg>

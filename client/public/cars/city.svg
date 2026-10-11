@@ -1,0 +1,99 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 450" width="100%" height="100%">
+  <defs>
+    <linearGradient id="cityBg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#1e2430" />
+      <stop offset="100%" stop-color="#0b0e14" />
+    </linearGradient>
+    <linearGradient id="cityBody" x1="0%" y1="0%" x2="100%" y2="50%">
+      <stop offset="0%" stop-color="#64748b" />
+      <stop offset="50%" stop-color="#475569" />
+      <stop offset="100%" stop-color="#334155" />
+    </linearGradient>
+    <linearGradient id="cityGlass" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#38bdf8" stop-opacity="0.65" />
+      <stop offset="100%" stop-color="#0284c7" stop-opacity="0.85" />
+    </linearGradient>
+    <filter id="cityShadow" x="-10%" y="-10%" width="120%" height="130%">
+      <feDropShadow dx="0" dy="18" stdDeviation="20" flood-color="#000" flood-opacity="0.65" />
+    </filter>
+  </defs>
+
+  <rect width="800" height="450" fill="url(#cityBg)" />
+  
+  <ellipse cx="400" cy="370" rx="360" ry="24" fill="#0284c7" opacity="0.15" />
+  <ellipse cx="400" cy="365" rx="320" ry="12" fill="#000" opacity="0.65" />
+
+  <!-- Car Graphics: Honda City (Aerodynamic Executive Sedan) -->
+  <g filter="url(#cityShadow)">
+    <path d="M 115 315
+             L 125 285
+             L 180 255
+             L 300 245
+             L 395 170
+             Q 450 160 570 162
+             L 630 168
+             Q 665 185 685 240
+             L 715 250
+             L 715 315
+             L 665 315
+             Q 655 295 620 295
+             Q 585 295 575 315
+             L 305 315
+             Q 295 295 260 295
+             Q 225 295 215 315
+             L 125 315
+             Z"
+          fill="url(#cityBody)" stroke="#94a3b8" stroke-width="2" />
+
+    <!-- 9-Array Jewel-Eye LED Headlamps -->
+    <path d="M 120 288 Q 155 275 185 280 L 175 298 Z" fill="#e0f2fe" stroke="#38bdf8" stroke-width="2" />
+    <circle cx="140" cy="288" r="3" fill="#38bdf8" />
+    <circle cx="152" cy="287" r="3" fill="#38bdf8" />
+    <circle cx="164" cy="286" r="3" fill="#38bdf8" />
+
+    <!-- Z-Shaped 3D LED Taillamp -->
+    <path d="M 695 252 Q 715 255 715 272 L 690 272 Z" fill="#ef4444" stroke="#991b1b" stroke-width="2" />
+
+    <!-- Aerodynamic Glasshouse -->
+    <path d="M 405 174 L 495 174 L 495 235 L 325 235 Z" fill="url(#cityGlass)" stroke="#0f172a" stroke-width="2" />
+    <path d="M 503 174 L 600 174 Q 630 176 645 215 L 655 235 L 503 235 Z" fill="url(#cityGlass)" stroke="#0f172a" stroke-width="2" />
+
+    <!-- Wheels (Dual-Tone Multi-Spoke Alloys) -->
+    <g transform="translate(260, 310)">
+      <circle cx="0" cy="0" r="50" fill="#0f172a" stroke="#475569" stroke-width="4" />
+      <circle cx="0" cy="0" r="34" fill="#334155" stroke="#cbd5e1" stroke-width="2" />
+      <line x1="0" y1="-28" x2="0" y2="28" stroke="#f8fafc" stroke-width="3" />
+      <line x1="-28" y1="0" x2="28" y2="0" stroke="#f8fafc" stroke-width="3" />
+      <line x1="-20" y1="-20" x2="20" y2="20" stroke="#f8fafc" stroke-width="3" />
+      <line x1="-20" y1="20" x2="20" y2="-20" stroke="#f8fafc" stroke-width="3" />
+      <circle cx="0" cy="0" r="10" fill="#0f172a" stroke="#cbd5e1" stroke-width="2" />
+    </g>
+
+    <g transform="translate(620, 310)">
+      <circle cx="0" cy="0" r="50" fill="#0f172a" stroke="#475569" stroke-width="4" />
+      <circle cx="0" cy="0" r="34" fill="#334155" stroke="#cbd5e1" stroke-width="2" />
+      <line x1="0" y1="-28" x2="0" y2="28" stroke="#f8fafc" stroke-width="3" />
+      <line x1="-28" y1="0" x2="28" y2="0" stroke="#f8fafc" stroke-width="3" />
+      <line x1="-20" y1="-20" x2="20" y2="20" stroke="#f8fafc" stroke-width="3" />
+      <line x1="-20" y1="20" x2="20" y2="-20" stroke="#f8fafc" stroke-width="3" />
+      <circle cx="0" cy="0" r="10" fill="#0f172a" stroke="#cbd5e1" stroke-width="2" />
+    </g>
+  </g>
+
+  <!-- Typography Badging -->
+  <g transform="translate(48, 55)">
+    <rect x="0" y="0" width="135" height="24" rx="12" fill="#0284c7" fill-opacity="0.2" stroke="#0284c7" stroke-width="1" />
+    <text x="67" y="16" fill="#38bdf8" font-size="11" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-weight="700" text-anchor="middle" letter-spacing="1">SELF-CHARGING HYBRID</text>
+    
+    <text x="0" y="58" fill="#ffffff" font-size="28" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-weight="900" letter-spacing="0.5">Honda City e:HEV</text>
+    <text x="0" y="84" fill="#94a3b8" font-size="14" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-weight="600">ZX Hybrid • Dual Motor Electric-Hybrid • 27.1 km/l</text>
+  </g>
+
+  <!-- Indian Registration Plate Badge -->
+  <g transform="translate(620, 50)">
+    <rect x="0" y="0" width="132" height="34" rx="5" fill="#fef08a" stroke="#ca8a04" stroke-width="1.5" />
+    <rect x="0" y="0" width="22" height="34" rx="4" fill="#0284c7" />
+    <text x="11" y="21" fill="#ffffff" font-size="9" font-family="monospace" font-weight="800" text-anchor="middle">IND</text>
+    <text x="77" y="23" fill="#0f172a" font-size="13" font-family="monospace" font-weight="800" text-anchor="middle" letter-spacing="1">DL 03 XY 7788</text>
+  </g>
+</svg>

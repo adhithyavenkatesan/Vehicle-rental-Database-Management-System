@@ -1,0 +1,105 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 450" width="100%" height="100%">
+  <defs>
+    <linearGradient id="eclassBg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#18181b" />
+      <stop offset="100%" stop-color="#09090b" />
+    </linearGradient>
+    <linearGradient id="eclassBody" x1="0%" y1="0%" x2="100%" y2="50%">
+      <stop offset="0%" stop-color="#27272a" />
+      <stop offset="50%" stop-color="#18181b" />
+      <stop offset="100%" stop-color="#09090b" />
+    </linearGradient>
+    <linearGradient id="eclassGlass" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#38bdf8" stop-opacity="0.5" />
+      <stop offset="100%" stop-color="#0f172a" stop-opacity="0.9" />
+    </linearGradient>
+    <filter id="eclassShadow" x="-10%" y="-10%" width="120%" height="130%">
+      <feDropShadow dx="0" dy="20" stdDeviation="22" flood-color="#000" flood-opacity="0.7" />
+    </filter>
+  </defs>
+
+  <rect width="800" height="450" fill="url(#eclassBg)" />
+  
+  <ellipse cx="400" cy="370" rx="370" ry="24" fill="#a855f7" opacity="0.14" />
+  <ellipse cx="400" cy="365" rx="330" ry="12" fill="#000" opacity="0.75" />
+
+  <!-- Car Graphics: Mercedes-Benz E-Class LWB (Ultra-Luxury Chauffeur Saloon) -->
+  <g filter="url(#eclassShadow)">
+    <path d="M 105 315
+             L 115 280
+             Q 140 250 205 245
+             L 325 240
+             L 415 168
+             Q 465 158 580 160
+             L 640 166
+             Q 675 185 695 240
+             L 730 250
+             Q 735 270 730 315
+             L 675 315
+             Q 665 295 630 295
+             Q 595 295 585 315
+             L 300 315
+             Q 290 295 255 295
+             Q 220 295 210 315
+             L 110 315
+             Z"
+          fill="url(#eclassBody)" stroke="#71717a" stroke-width="2" />
+
+    <!-- Chrome Beltline & Quarter Glass LWB Signature -->
+    <path d="M 430 172 L 525 172 L 525 235 L 345 235 Z" fill="url(#eclassGlass)" stroke="#09090b" stroke-width="2" />
+    <path d="M 533 172 L 630 172 Q 655 174 670 210 L 675 235 L 533 235 Z" fill="url(#eclassGlass)" stroke="#09090b" stroke-width="2" />
+    <!-- Chauffeur LWB Chrome Quarter Pillar Trim -->
+    <path d="M 678 200 L 690 235 L 675 235 Z" fill="#f4f4f5" />
+
+    <!-- Chrome High-Gloss Star Waistline -->
+    <line x1="210" y1="244" x2="725" y2="248" stroke="#ffffff" stroke-width="2" opacity="0.8" />
+
+    <!-- Digital Light Projectors -->
+    <path d="M 110 282 Q 145 268 170 272 L 160 292 Z" fill="#e0f2fe" stroke="#a855f7" stroke-width="2" />
+
+    <!-- Star Shaped LED Taillamps (E-Class Trademark) -->
+    <path d="M 705 250 Q 730 255 730 270 L 695 270 Z" fill="#ef4444" stroke="#991b1b" stroke-width="2" />
+
+    <!-- Multi-Spoke AMG Line Luxury Wheels -->
+    <g transform="translate(255, 310)">
+      <circle cx="0" cy="0" r="50" fill="#09090b" stroke="#71717a" stroke-width="4" />
+      <circle cx="0" cy="0" r="35" fill="#27272a" stroke="#cbd5e1" stroke-width="2" />
+      <line x1="0" y1="-28" x2="0" y2="28" stroke="#f4f4f5" stroke-width="2.5" />
+      <line x1="-28" y1="0" x2="28" y2="0" stroke="#f4f4f5" stroke-width="2.5" />
+      <line x1="-20" y1="-20" x2="20" y2="20" stroke="#f4f4f5" stroke-width="2.5" />
+      <line x1="-20" y1="20" x2="20" y2="-20" stroke="#f4f4f5" stroke-width="2.5" />
+      <line x1="-26" y1="-10" x2="26" y2="10" stroke="#f4f4f5" stroke-width="2.5" />
+      <line x1="-26" y1="10" x2="26" y2="-10" stroke="#f4f4f5" stroke-width="2.5" />
+      <circle cx="0" cy="0" r="10" fill="#09090b" stroke="#cbd5e1" stroke-width="2" />
+    </g>
+
+    <g transform="translate(630, 310)">
+      <circle cx="0" cy="0" r="50" fill="#09090b" stroke="#71717a" stroke-width="4" />
+      <circle cx="0" cy="0" r="35" fill="#27272a" stroke="#cbd5e1" stroke-width="2" />
+      <line x1="0" y1="-28" x2="0" y2="28" stroke="#f4f4f5" stroke-width="2.5" />
+      <line x1="-28" y1="0" x2="28" y2="0" stroke="#f4f4f5" stroke-width="2.5" />
+      <line x1="-20" y1="-20" x2="20" y2="20" stroke="#f4f4f5" stroke-width="2.5" />
+      <line x1="-20" y1="20" x2="20" y2="-20" stroke="#f4f4f5" stroke-width="2.5" />
+      <line x1="-26" y1="-10" x2="26" y2="10" stroke="#f4f4f5" stroke-width="2.5" />
+      <line x1="-26" y1="10" x2="26" y2="-10" stroke="#f4f4f5" stroke-width="2.5" />
+      <circle cx="0" cy="0" r="10" fill="#09090b" stroke="#cbd5e1" stroke-width="2" />
+    </g>
+  </g>
+
+  <!-- Typography Badging -->
+  <g transform="translate(48, 55)">
+    <rect x="0" y="0" width="135" height="24" rx="12" fill="#a855f7" fill-opacity="0.2" stroke="#a855f7" stroke-width="1" />
+    <text x="67" y="16" fill="#c084fc" font-size="11" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-weight="700" text-anchor="middle" letter-spacing="1">EXECUTIVE CHAUFFEUR</text>
+    
+    <text x="0" y="58" fill="#ffffff" font-size="28" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-weight="900" letter-spacing="0.5">Mercedes-Benz E-Class</text>
+    <text x="0" y="84" fill="#94a3b8" font-size="14" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-weight="600">E220d LWB Exclusive • Rear Reclining Seats • Burmester 4D</text>
+  </g>
+
+  <!-- Indian Registration Plate Badge -->
+  <g transform="translate(620, 50)">
+    <rect x="0" y="0" width="132" height="34" rx="5" fill="#fef08a" stroke="#ca8a04" stroke-width="1.5" />
+    <rect x="0" y="0" width="22" height="34" rx="4" fill="#0284c7" />
+    <text x="11" y="21" fill="#ffffff" font-size="9" font-family="monospace" font-weight="800" text-anchor="middle">IND</text>
+    <text x="77" y="23" fill="#0f172a" font-size="13" font-family="monospace" font-weight="800" text-anchor="middle" letter-spacing="1">MH 01 DX 9090</text>
+  </g>
+</svg>

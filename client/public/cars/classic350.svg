@@ -1,0 +1,120 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 450" width="100%" height="100%">
+  <defs>
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#141923" />
+      <stop offset="100%" stop-color="#0a0d14" />
+    </linearGradient>
+    <linearGradient id="metalGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#475569" />
+      <stop offset="50%" stop-color="#1e293b" />
+      <stop offset="100%" stop-color="#0f172a" />
+    </linearGradient>
+    <linearGradient id="tankGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#1e293b" />
+      <stop offset="40%" stop-color="#0f172a" />
+      <stop offset="100%" stop-color="#020617" />
+    </linearGradient>
+    <linearGradient id="goldGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#fbbf24" />
+      <stop offset="100%" stop-color="#d97706" />
+    </linearGradient>
+    <linearGradient id="chromeGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#f8fafc" />
+      <stop offset="50%" stop-color="#94a3b8" />
+      <stop offset="100%" stop-color="#475569" />
+    </linearGradient>
+    <filter id="bikeShadow" x="-10%" y="-10%" width="120%" height="130%">
+      <feDropShadow dx="0" dy="18" stdDeviation="20" flood-color="#000" flood-opacity="0.7" />
+    </filter>
+  </defs>
+
+  <!-- Background -->
+  <rect width="800" height="450" fill="url(#bgGrad)" />
+  <g opacity="0.05" stroke="#94a3b8" stroke-width="1">
+    <line x1="0" y1="100" x2="800" y2="100" />
+    <line x1="0" y1="200" x2="800" y2="200" />
+    <line x1="0" y1="300" x2="800" y2="300" />
+  </g>
+
+  <!-- Badge / Model Indicator -->
+  <g transform="translate(48, 48)">
+    <rect x="0" y="0" width="220" height="32" rx="6" fill="#1e293b" stroke="#334155" stroke-width="1" />
+    <text x="14" y="21" fill="#f8fafc" font-family="'Plus Jakarta Sans', sans-serif" font-weight="800" font-size="13" letter-spacing="1.5">ROYAL ENFIELD 350</text>
+    <circle cx="198" cy="16" r="4" fill="#fbbf24" />
+  </g>
+  <text x="752" y="52" fill="#64748b" font-family="'Plus Jakarta Sans', sans-serif" font-weight="700" font-size="14" text-anchor="end">CRUISER MOTORCYCLE</text>
+
+  <!-- Ground Drop Shadow -->
+  <ellipse cx="400" cy="385" rx="280" ry="22" fill="#000" opacity="0.6" filter="blur(8px)" />
+
+  <!-- Motorcycle Illustration -->
+  <g filter="url(#bikeShadow)">
+    <!-- Rear Wheel -->
+    <g transform="translate(220, 310)">
+      <circle cx="0" cy="0" r="72" fill="#0f172a" stroke="#1e293b" stroke-width="10" />
+      <circle cx="0" cy="0" r="54" fill="none" stroke="#475569" stroke-width="5" />
+      <!-- Spokes -->
+      <line x1="-50" y1="0" x2="50" y2="0" stroke="#94a3b8" stroke-width="2" />
+      <line x1="0" y1="-50" x2="0" y2="50" stroke="#94a3b8" stroke-width="2" />
+      <line x1="-35" y1="-35" x2="35" y2="35" stroke="#94a3b8" stroke-width="2" />
+      <line x1="-35" y1="35" x2="35" y2="-35" stroke="#94a3b8" stroke-width="2" />
+      <circle cx="0" cy="0" r="22" fill="url(#chromeGrad)" stroke="#334155" stroke-width="2" />
+    </g>
+
+    <!-- Front Wheel -->
+    <g transform="translate(580, 310)">
+      <circle cx="0" cy="0" r="74" fill="#0f172a" stroke="#1e293b" stroke-width="10" />
+      <circle cx="0" cy="0" r="56" fill="none" stroke="#475569" stroke-width="5" />
+      <!-- Spokes -->
+      <line x1="-52" y1="0" x2="52" y2="0" stroke="#94a3b8" stroke-width="2" />
+      <line x1="0" y1="-52" x2="0" y2="52" stroke="#94a3b8" stroke-width="2" />
+      <line x1="-37" y1="-37" x2="37" y2="37" stroke="#94a3b8" stroke-width="2" />
+      <line x1="-37" y1="37" x2="37" y2="-37" stroke="#94a3b8" stroke-width="2" />
+      <circle cx="0" cy="0" r="24" fill="url(#chromeGrad)" stroke="#334155" stroke-width="2" />
+      <circle cx="0" cy="0" r="38" fill="none" stroke="#94a3b8" stroke-width="3" stroke-dasharray="6,4" />
+    </g>
+
+    <!-- Frame & Swingarm -->
+    <path d="M220 310 L340 280 L440 290 L520 220 L580 310" fill="none" stroke="#1e293b" stroke-width="12" stroke-linecap="round" stroke-linejoin="round" />
+    <path d="M220 310 L320 230 L400 230 L340 310 Z" fill="#0f172a" stroke="#334155" stroke-width="3" />
+
+    <!-- Chrome Long Silencer Exhaust Pipe -->
+    <path d="M370 295 L400 325 L500 328 L230 330" fill="none" stroke="url(#chromeGrad)" stroke-width="14" stroke-linecap="round" />
+    <path d="M230 327 L170 327" fill="none" stroke="url(#chromeGrad)" stroke-width="12" stroke-linecap="round" />
+
+    <!-- Engine Block -->
+    <rect x="340" y="250" width="90" height="70" rx="10" fill="#1e293b" stroke="url(#chromeGrad)" stroke-width="3" />
+    <line x1="345" y1="265" x2="425" y2="265" stroke="#94a3b8" stroke-width="3" />
+    <line x1="345" y1="280" x2="425" y2="280" stroke="#94a3b8" stroke-width="3" />
+    <line x1="345" y1="295" x2="425" y2="295" stroke="#94a3b8" stroke-width="3" />
+    <circle cx="385" cy="275" r="16" fill="url(#chromeGrad)" />
+
+    <!-- Classic Teardrop Fuel Tank -->
+    <path d="M370 220 C370 185, 410 180, 480 185 C510 190, 520 220, 490 230 C430 235, 380 230, 370 220 Z" fill="url(#tankGrad)" stroke="#334155" stroke-width="3" />
+    <!-- Gold Tank Pin Stripe -->
+    <path d="M400 205 C430 195, 480 198, 495 212" fill="none" stroke="url(#goldGrad)" stroke-width="3" stroke-linecap="round" />
+    <ellipse cx="450" cy="210" rx="14" ry="7" fill="url(#goldGrad)" opacity="0.9" />
+
+    <!-- Split Rider & Pillion Seat -->
+    <!-- Front Seat -->
+    <path d="M310 225 C330 215, 360 215, 380 228 C370 242, 330 245, 310 225 Z" fill="#020617" stroke="#334155" stroke-width="2" />
+    <!-- Rear Pillion Seat -->
+    <path d="M245 230 C265 222, 290 222, 305 232 C295 242, 260 244, 245 230 Z" fill="#020617" stroke="#334155" stroke-width="2" />
+
+    <!-- Rear Fender -->
+    <path d="M180 280 C185 240, 220 225, 270 235" fill="none" stroke="#0f172a" stroke-width="14" stroke-linecap="round" />
+    <!-- Rear Taillight -->
+    <circle cx="178" cy="275" r="7" fill="#ef4444" stroke="#991b1b" stroke-width="2" />
+
+    <!-- Front Telescopic Forks & Handlebar -->
+    <line x1="530" y1="170" x2="580" y2="310" stroke="url(#chromeGrad)" stroke-width="10" stroke-linecap="round" />
+    <path d="M510 160 L545 170 L560 155" fill="none" stroke="url(#chromeGrad)" stroke-width="7" stroke-linecap="round" />
+
+    <!-- Round Chrome Headlight -->
+    <circle cx="560" cy="180" r="18" fill="url(#chromeGrad)" stroke="#64748b" stroke-width="2" />
+    <circle cx="563" cy="180" r="14" fill="#fef08a" opacity="0.8" />
+    <!-- Round Mirrors -->
+    <circle cx="510" cy="140" r="9" fill="url(#chromeGrad)" />
+    <line x1="518" y1="148" x2="528" y2="165" stroke="url(#chromeGrad)" stroke-width="4" />
+  </g>
+</svg>
