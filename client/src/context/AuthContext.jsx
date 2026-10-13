@@ -110,7 +110,15 @@ export function AuthProvider({ children }) {
       if (!res.success) {
         throw new Error(res.message || 'Registration failed.');
       }
-      showToast('Account created successfully. Please log in.', 'success');
+      if (res.token && res.user) {
+        sessionStorage.setItem('rentdrive_token', res.token);
+        localStorage.removeItem('rentdrive_token');
+        setToken(res.token);
+        setUser(res.user);
+        showToast(`Welcome to RentDrive, ${res.user.full_name}!`, 'success');
+      } else {
+        showToast(res.message || 'Account created successfully.', 'success');
+      }
       return res;
     } catch (err) {
       showToast(err.message || 'Registration failed.', 'error');

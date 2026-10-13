@@ -104,10 +104,11 @@ if (fs.existsSync(clientDistPath)) {
 app.use(errorHandler);
 
 const PORT = process.env.PORT || 5000;
+const HOST = process.env.HOST || '0.0.0.0';
 
-function startServer(port = PORT) {
-  return app.listen(port, () => {
-    console.log(`[Server] Vehicle Rental DBMS API running on http://localhost:${port}`);
+function startServer(port = PORT, host = HOST) {
+  return app.listen(port, host, () => {
+    console.log(`[Server] Vehicle Rental DBMS API running on http://127.0.0.1:${port}`);
   });
 }
 

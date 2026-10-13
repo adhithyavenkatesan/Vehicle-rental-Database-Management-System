@@ -11,15 +11,27 @@ async function request(endpoint, options = {}) {
     ...options.headers
   };
 
-  const response = await fetch(`${API_BASE}${endpoint}`, {
-    ...options,
-    headers
-  });
+  let response;
+  try {
+    response = await fetch(`${API_BASE}${endpoint}`, {
+      ...options,
+      headers
+    });
+  } catch (netErr) {
+    const error = new Error('Could not connect to backend server. Please verify backend is running on port 5000.');
+    error.status = 0;
+    throw error;
+  }
 
   const data = await response.json().catch(() => ({}));
 
   if (!response.ok) {
-    const error = new Error(data.message || 'An unexpected server error occurred.');
+    const msg = data.message || data.error || (response.status === 502 || response.status === 504 
+      ? 'Backend service is starting up or temporarily unavailable.' 
+      : response.status === 404
+      ? 'Requested endpoint not found.'
+      : 'An unexpected server error occurred.');
+    const error = new Error(msg);
     error.status = response.status;
     error.data = data;
     throw error;

@@ -65,7 +65,7 @@ router.post('/login', (req, res, next) => {
 
     const cleanId = loginId.toLowerCase();
 
-    // Query user from real database by email, username, or staff employee code
+    // Query user from real database by email, username, staff employee code, or phone number
     const user = get(
       `SELECT u.id, u.email, u.username, u.password_hash, u.full_name, u.phone, u.status, u.role_id,
               u.failed_login_attempts, u.locked_until, u.last_login_at,
@@ -76,8 +76,13 @@ router.post('/login', (req, res, next) => {
        JOIN roles r ON u.role_id = r.id
        LEFT JOIN customers c ON c.user_id = u.id
        LEFT JOIN staff s ON s.user_id = u.id
-       WHERE lower(u.email) = ? OR lower(COALESCE(u.username, '')) = ? OR lower(COALESCE(s.employee_code, '')) = ?`,
-      [cleanId, cleanId, cleanId]
+       WHERE lower(u.email) = ? 
+          OR lower(COALESCE(u.username, '')) = ? 
+          OR lower(COALESCE(s.employee_code, '')) = ?
+          OR lower(COALESCE(u.phone, '')) = ?
+          OR replace(COALESCE(u.phone, ''), ' ', '') = ?
+          OR replace(COALESCE(u.phone, ''), '-', '') = ?`,
+      [cleanId, cleanId, cleanId, cleanId, cleanId, cleanId]
     );
 
     // If user does not exist, reject with generic message
@@ -188,6 +193,7 @@ router.post('/register', (req, res, next) => {
       confirm_password,
       full_name,
       phone,
+      role = 'CUSTOMER',
       driving_license_no,
       license_expiry,
       address,
@@ -235,10 +241,19 @@ router.post('/register', (req, res, next) => {
       });
     }
 
+    // Role assignment (defaults to CUSTOMER, allows STAFF or ADMIN if chosen)
+    const validRoles = ['CUSTOMER', 'STAFF', 'ADMIN'];
+    const requestedRole = (role && typeof role === 'string' ? role.trim().toUpperCase() : 'CUSTOMER');
+    const roleName = validRoles.includes(requestedRole) ? requestedRole : 'CUSTOMER';
+    const roleRecord = get('SELECT id, name FROM roles WHERE name = ?', [roleName]);
+    if (!roleRecord) {
+      return res.status(400).json({ success: false, message: 'Invalid role configuration.' });
+    }
+
     // Generate driving license number if not provided
     const licenseNo = driving_license_no && driving_license_no.trim()
       ? driving_license_no.trim().toUpperCase()
-      : `DL-${Date.now().toString().slice(-8)}`;
+      : `DL-${Date.now().toString().slice(-8)}${Math.random().toString(36).slice(2, 6).toUpperCase()}`;
 
     const existingLicense = get('SELECT id FROM customers WHERE driving_license_no = ?', [licenseNo]);
     if (existingLicense) {
@@ -248,53 +263,78 @@ router.post('/register', (req, res, next) => {
       });
     }
 
-    // Strictly CUSTOMER role
-    const customerRole = get("SELECT id FROM roles WHERE name = 'CUSTOMER'");
+    // Generate unique username from email
+    const baseUsername = cleanEmail.split('@')[0].toLowerCase().replace(/[^a-z0-9_]/g, '');
+    const existingUsername = get('SELECT id FROM users WHERE lower(username) = ?', [baseUsername]);
+    const cleanUsername = existingUsername ? `${baseUsername}_${Date.now().toString().slice(-4)}` : baseUsername;
+
     const passwordHash = bcrypt.hashSync(password, 10);
 
     const result = transaction(() => {
       const userRes = run(
-        'INSERT INTO users (role_id, email, password_hash, full_name, phone, status, failed_login_attempts) VALUES (?, ?, ?, ?, ?, ?, 0)',
-        [customerRole.id, cleanEmail, passwordHash, full_name.trim(), phone || null, 'ACTIVE']
+        'INSERT INTO users (role_id, email, username, password_hash, full_name, phone, status, failed_login_attempts) VALUES (?, ?, ?, ?, ?, ?, ?, 0)',
+        [roleRecord.id, cleanEmail, cleanUsername, passwordHash, full_name.trim(), phone ? phone.trim() : null, 'ACTIVE']
       );
 
       const userId = userRes.lastInsertRowid;
+      let entityId = userId;
 
-      const custRes = run(
-        `INSERT INTO customers (
-          user_id, driving_license_no, license_expiry, address, city, state, postal_code
-        ) VALUES (?, ?, ?, ?, ?, ?, ?)`,
-        [
-          userId,
-          licenseNo,
-          license_expiry || '2030-12-31',
-          address || null,
-          city || 'New Delhi',
-          state || 'Delhi',
-          postal_code || '110001'
-        ]
-      );
+      if (roleName === 'CUSTOMER') {
+        const custRes = run(
+          `INSERT INTO customers (
+            user_id, driving_license_no, license_expiry, address, city, state, postal_code
+          ) VALUES (?, ?, ?, ?, ?, ?, ?)`,
+          [
+            userId,
+            licenseNo,
+            license_expiry || '2030-12-31',
+            address || null,
+            city || 'New Delhi',
+            state || 'Delhi',
+            postal_code || '110001'
+          ]
+        );
+        entityId = custRes.lastInsertRowid;
+      } else if (roleName === 'STAFF') {
+        const defaultBranch = get('SELECT id FROM branches LIMIT 1');
+        const empCode = `EMP-${Date.now().toString().slice(-6)}`;
+        const staffRes = run(
+          `INSERT INTO staff (
+            user_id, branch_id, employee_code, designation, department, hire_date, status
+          ) VALUES (?, ?, ?, ?, ?, DATE('now'), 'ACTIVE')`,
+          [
+            userId,
+            defaultBranch ? defaultBranch.id : 1,
+            empCode,
+            'Operations Specialist',
+            'OPERATIONS'
+          ]
+        );
+        entityId = staffRes.lastInsertRowid;
+      }
 
-      return { userId, customerId: custRes.lastInsertRowid };
+      return { userId, entityId };
     });
 
     const newUser = get(
-      `SELECT u.id, u.email, u.full_name, u.phone, u.status, u.role_id, 'CUSTOMER' as role,
-              c.id as customer_id, c.driving_license_no
+      `SELECT u.id, u.email, u.username, u.full_name, u.phone, u.status, u.role_id, r.name as role,
+              c.id as customer_id, c.driving_license_no,
+              s.id as staff_id, s.employee_code, s.designation
        FROM users u
-       JOIN customers c ON c.user_id = u.id
+       JOIN roles r ON u.role_id = r.id
+       LEFT JOIN customers c ON c.user_id = u.id
+       LEFT JOIN staff s ON s.user_id = u.id
        WHERE u.id = ?`,
       [result.userId]
     );
 
     const token = generateToken(newUser);
 
-    logAudit(newUser.id, 'CUSTOMER_REGISTRATION', 'CUSTOMER', result.customerId, 'New customer registered account', req.ip);
+    logAudit(newUser.id, `${roleName}_REGISTRATION`, roleName, result.entityId, `New ${roleName.toLowerCase()} registered account`, req.ip);
 
-    // Return successful creation message (and token for API tests, though frontend prompts manual login)
     res.status(201).json({
       success: true,
-      message: 'Account created successfully. Please log in.',
+      message: 'Account created successfully.',
       token,
       user: newUser
     });

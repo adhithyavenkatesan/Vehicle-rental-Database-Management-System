@@ -24,6 +24,8 @@ export function DashboardPage({ onNavigate }) {
   const { user } = useAuth();
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [revenuePeriod, setRevenuePeriod] = useState('monthly'); // 'monthly' | 'yearly' | 'daily'
+  const [trendPeriod, setTrendPeriod] = useState('monthly'); // 'monthly' | 'yearly'
 
   useEffect(() => {
     async function loadStats() {
@@ -205,16 +207,90 @@ export function DashboardPage({ onNavigate }) {
           <div style={{ fontSize: '0.72rem', color: 'var(--text-dim)', marginTop: '0.2rem' }}>Reservations logged today</div>
         </div>
 
-        {/* 7. Today's Revenue */}
+        {/* 7. Revenue Metric Card (Monthly / Yearly / Daily Selector) */}
         <div className="glass-card" style={{ padding: '1.25rem' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <span style={{ color: 'var(--text-muted)', fontSize: '0.82rem', fontWeight: 600 }}>Today's Revenue</span>
-            <DollarSign size={18} color="var(--success)" />
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '0.5rem' }}>
+            <span style={{ color: 'var(--text-muted)', fontSize: '0.82rem', fontWeight: 600 }}>
+              {revenuePeriod === 'yearly'
+                ? 'Yearly Revenue'
+                : revenuePeriod === 'daily'
+                ? "Today's Revenue"
+                : 'Monthly Revenue'}
+            </span>
+            <div
+              style={{
+                display: 'inline-flex',
+                background: 'rgba(255, 255, 255, 0.06)',
+                borderRadius: '5px',
+                padding: '2px',
+                border: '1px solid var(--border-subtle)'
+              }}
+            >
+              {[
+                { key: 'monthly', label: 'Mo' },
+                { key: 'yearly', label: 'Yr' },
+                { key: 'daily', label: 'Day' }
+              ].map(({ key, label }) => (
+                <button
+                  key={key}
+                  type="button"
+                  onClick={() => setRevenuePeriod(key)}
+                  style={{
+                    border: 'none',
+                    background: revenuePeriod === key ? 'var(--primary)' : 'transparent',
+                    color: revenuePeriod === key ? '#fff' : 'var(--text-muted)',
+                    fontSize: '0.68rem',
+                    fontWeight: 700,
+                    padding: '2px 6px',
+                    borderRadius: '3px',
+                    cursor: 'pointer',
+                    transition: 'all 0.15s ease'
+                  }}
+                  title={`View ${key} revenue`}
+                >
+                  {label}
+                </button>
+              ))}
+            </div>
           </div>
-          <div style={{ fontSize: '1.85rem', fontWeight: 800, marginTop: '0.4rem', color: 'var(--success)' }}>
-            ₹{data?.todayRevenue?.toLocaleString('en-IN') ?? '0'}
+
+          <div style={{ fontSize: '1.85rem', fontWeight: 800, marginTop: '0.4rem', color: 'var(--success)', letterSpacing: '-0.02em' }}>
+            ₹{
+              revenuePeriod === 'yearly'
+                ? (data?.yearRevenue?.toLocaleString('en-IN') ?? '0')
+                : revenuePeriod === 'daily'
+                ? (data?.todayRevenue?.toLocaleString('en-IN') ?? '0')
+                : (data?.monthRevenue?.toLocaleString('en-IN') ?? '0')
+            }
           </div>
-          <div style={{ fontSize: '0.72rem', color: 'var(--text-dim)', marginTop: '0.2rem' }}>Settled payments today</div>
+
+          <div style={{ fontSize: '0.72rem', color: 'var(--text-dim)', marginTop: '0.2rem' }}>
+            {revenuePeriod === 'yearly'
+              ? `Reconciled for ${data?.yearLabel || 'current year'}`
+              : revenuePeriod === 'daily'
+              ? 'Settled payments today'
+              : `Reconciled for ${data?.monthLabel || 'current month'}`}
+          </div>
+
+          <div
+            style={{
+              display: 'flex',
+              gap: '0.55rem',
+              marginTop: '0.45rem',
+              paddingTop: '0.4rem',
+              borderTop: '1px solid var(--border-subtle)',
+              fontSize: '0.7rem',
+              color: 'var(--text-muted)'
+            }}
+          >
+            <span>
+              Mo: <strong style={{ color: 'var(--text-main)' }}>₹{(data?.monthRevenue || 0).toLocaleString('en-IN')}</strong>
+            </span>
+            <span>•</span>
+            <span>
+              Yr: <strong style={{ color: 'var(--text-main)' }}>₹{(data?.yearRevenue || 0).toLocaleString('en-IN')}</strong>
+            </span>
+          </div>
         </div>
 
         {/* 8. Outstanding Payments */}
@@ -256,27 +332,81 @@ export function DashboardPage({ onNavigate }) {
 
       {/* Charts Section: Monthly Revenue Trend & Category Breakdown */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(400px, 1fr))', gap: '1.5rem' }}>
-        {/* Monthly Revenue Trend */}
+        {/* Revenue Trend (Monthly or Yearly) */}
         <div className="glass-card" style={{ padding: '1.5rem' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem', flexWrap: 'wrap', gap: '0.5rem' }}>
             <div>
-              <h3 style={{ fontSize: '1.1rem', fontWeight: 700, margin: 0 }}>Revenue Trend (Last 6 Months)</h3>
-              <div style={{ fontSize: '0.75rem', color: 'var(--text-dim)', marginTop: 2 }}>Aggregated from reconciled transaction receipts</div>
+              <h3 style={{ fontSize: '1.1rem', fontWeight: 700, margin: 0 }}>
+                {trendPeriod === 'yearly' ? 'Annual Revenue Trend' : 'Revenue Trend (Last 6 Months)'}
+              </h3>
+              <div style={{ fontSize: '0.75rem', color: 'var(--text-dim)', marginTop: 2 }}>
+                {trendPeriod === 'yearly'
+                  ? 'Aggregated by calendar year from reconciled ledgers'
+                  : 'Aggregated monthly from reconciled transaction receipts'}
+              </div>
             </div>
-            <span style={{ fontSize: '1.1rem', fontWeight: 800, color: 'var(--success)' }}>
-              ₹{data?.totalRevenue?.toLocaleString('en-IN') ?? '0'} Total
-            </span>
+
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+              <div
+                style={{
+                  display: 'inline-flex',
+                  background: 'rgba(255, 255, 255, 0.06)',
+                  borderRadius: '6px',
+                  padding: '2px',
+                  border: '1px solid var(--border-subtle)'
+                }}
+              >
+                <button
+                  type="button"
+                  onClick={() => setTrendPeriod('monthly')}
+                  style={{
+                    border: 'none',
+                    background: trendPeriod === 'monthly' ? 'var(--primary)' : 'transparent',
+                    color: trendPeriod === 'monthly' ? '#fff' : 'var(--text-muted)',
+                    fontSize: '0.7rem',
+                    fontWeight: 700,
+                    padding: '2px 7px',
+                    borderRadius: '4px',
+                    cursor: 'pointer'
+                  }}
+                >
+                  Monthly
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setTrendPeriod('yearly')}
+                  style={{
+                    border: 'none',
+                    background: trendPeriod === 'yearly' ? 'var(--primary)' : 'transparent',
+                    color: trendPeriod === 'yearly' ? '#fff' : 'var(--text-muted)',
+                    fontSize: '0.7rem',
+                    fontWeight: 700,
+                    padding: '2px 7px',
+                    borderRadius: '4px',
+                    cursor: 'pointer'
+                  }}
+                >
+                  Yearly
+                </button>
+              </div>
+
+              <span style={{ fontSize: '1.05rem', fontWeight: 800, color: 'var(--success)' }}>
+                ₹{data?.totalRevenue?.toLocaleString('en-IN') ?? '0'} Total
+              </span>
+            </div>
           </div>
 
           <div style={{ display: 'flex', alignItems: 'flex-end', gap: '1rem', height: 160, paddingTop: '1rem' }}>
-            {data?.monthlyRevenue?.length > 0 ? (
-              data.monthlyRevenue.map((m) => {
-                const maxRev = Math.max(...data.monthlyRevenue.map((x) => x.revenue), 1);
-                const heightPct = Math.max(Math.round((m.revenue / maxRev) * 100), 12);
+            {((trendPeriod === 'yearly' ? data?.yearlyRevenue : data?.monthlyRevenue) || []).length > 0 ? (
+              (trendPeriod === 'yearly' ? data?.yearlyRevenue : data?.monthlyRevenue).map((item) => {
+                const list = trendPeriod === 'yearly' ? data?.yearlyRevenue : data?.monthlyRevenue;
+                const label = item.month || item.year;
+                const maxRev = Math.max(...list.map((x) => x.revenue), 1);
+                const heightPct = Math.max(Math.round((item.revenue / maxRev) * 100), 12);
                 return (
-                  <div key={m.month} style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', height: '100%', justifyContent: 'flex-end' }}>
+                  <div key={label} style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', height: '100%', justifyContent: 'flex-end' }}>
                     <div style={{ fontSize: '0.72rem', fontWeight: 700, color: 'var(--text-muted)', marginBottom: 4 }}>
-                      ₹{Math.round(m.revenue / 1000)}k
+                      ₹{Math.round(item.revenue / 1000)}k
                     </div>
                     <div
                       style={{
@@ -288,7 +418,7 @@ export function DashboardPage({ onNavigate }) {
                         boxShadow: '0 4px 12px rgba(59, 130, 246, 0.3)'
                       }}
                     />
-                    <div style={{ fontSize: '0.72rem', color: 'var(--text-dim)', marginTop: 6 }}>{m.month}</div>
+                    <div style={{ fontSize: '0.72rem', color: 'var(--text-dim)', marginTop: 6 }}>{label}</div>
                   </div>
                 );
               })

@@ -99,9 +99,10 @@ export function LoginPage({ onLoginSuccess }) {
   const [regFullName, setRegFullName] = useState('');
   const [regEmail, setRegEmail] = useState('');
   const [regPhone, setRegPhone] = useState('');
+  const [regRole, setRegRole] = useState('CUSTOMER');
   const [regPassword, setRegPassword] = useState('');
-  const [regConfirmPassword, setRegConfirmPassword] = useState('');
   const [showRegPassword, setShowRegPassword] = useState(false);
+  const [regConfirmPassword, setRegConfirmPassword] = useState('');
   const [showRegConfirmPassword, setShowRegConfirmPassword] = useState(false);
 
   // =========================================================================
@@ -255,6 +256,7 @@ export function LoginPage({ onLoginSuccess }) {
         full_name: regFullName.trim(),
         email: cleanEmail,
         phone: regPhone.trim(),
+        role: regRole,
         password: regPassword,
         confirm_password: regConfirmPassword
       });
@@ -266,9 +268,14 @@ export function LoginPage({ onLoginSuccess }) {
       setRegPassword('');
       setRegConfirmPassword('');
 
-      // Show success message and navigate to login (Do NOT auto-login!)
-      navigateView('login');
-      setGlobalSuccess(res.message || 'Account created successfully. Please log in.');
+      // Auto-login into app immediately upon successful account creation
+      if (onLoginSuccess && res?.user) {
+        onLoginSuccess(res.user);
+      } else {
+        navigateView('login');
+        setLoginIdentifier(cleanEmail);
+        setGlobalSuccess(res?.message || 'Account created successfully. Please log in.');
+      }
     } catch (err) {
       const msg = err.message || 'Registration failed. Please check your details.';
       setGlobalError(msg);
@@ -557,13 +564,13 @@ export function LoginPage({ onLoginSuccess }) {
             </div>
             <h2 style={{ fontSize: '1.85rem', fontWeight: 800, letterSpacing: '-0.02em', color: '#ffffff', margin: 0 }}>
               {view === 'login' && 'Welcome Back'}
-              {view === 'register' && 'Create Customer Account'}
+              {view === 'register' && (regRole === 'STAFF' ? 'Create Staff Account' : regRole === 'ADMIN' ? 'Create Admin Account' : 'Create Customer Account')}
               {view === 'forgot' && 'Forgot Password'}
               {view === 'reset' && 'Reset Password'}
             </h2>
             <p style={{ color: '#94a3b8', fontSize: '0.88rem', marginTop: '0.4rem', marginBottom: 0 }}>
               {view === 'login' && 'Sign in to continue'}
-              {view === 'register' && 'Register as a verified renter for self-drive commercial bookings'}
+              {view === 'register' && (regRole === 'STAFF' ? 'Register as operations & fleet desk staff' : regRole === 'ADMIN' ? 'Register with administrator access' : 'Register as a verified renter for self-drive commercial bookings')}
               {view === 'forgot' && 'Enter your registered email address to receive password reset instructions'}
               {view === 'reset' && 'Create a new secure password for your account'}
             </p>
@@ -596,8 +603,8 @@ export function LoginPage({ onLoginSuccess }) {
             <div
               style={{
                 display: 'flex',
-                alignItems: 'flex-start',
-                gap: '0.75rem',
+                flexDirection: 'column',
+                gap: '0.5rem',
                 padding: '0.85rem 1rem',
                 borderRadius: 10,
                 background: 'rgba(239, 68, 68, 0.12)',
@@ -608,8 +615,34 @@ export function LoginPage({ onLoginSuccess }) {
                 lineHeight: 1.4
               }}
             >
-              <AlertCircle size={18} style={{ flexShrink: 0, marginTop: 2 }} />
-              <div>{globalError}</div>
+              <div style={{ display: 'flex', alignItems: 'flex-start', gap: '0.75rem' }}>
+                <AlertCircle size={18} style={{ flexShrink: 0, marginTop: 2 }} />
+                <div>{globalError}</div>
+              </div>
+              {view === 'register' && globalError.toLowerCase().includes('already exists') && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    const emailToUse = regEmail.trim();
+                    navigateView('login');
+                    if (emailToUse) setLoginIdentifier(emailToUse);
+                  }}
+                  style={{
+                    alignSelf: 'flex-start',
+                    marginTop: '0.25rem',
+                    background: 'rgba(255, 255, 255, 0.08)',
+                    border: '1px solid rgba(255, 255, 255, 0.2)',
+                    color: '#ffffff',
+                    padding: '0.35rem 0.75rem',
+                    borderRadius: 6,
+                    fontSize: '0.8rem',
+                    fontWeight: 600,
+                    cursor: 'pointer'
+                  }}
+                >
+                  Sign In with this email →
+                </button>
+              )}
             </div>
           )}
 
@@ -799,10 +832,42 @@ export function LoginPage({ onLoginSuccess }) {
           )}
 
           {/* =============================================================== */}
-          {/* VIEW 2: REGISTRATION FORM (Strictly Customer Role)               */}
+          {/* VIEW 2: REGISTRATION FORM                                        */}
           {/* =============================================================== */}
           {view === 'register' && (
             <form onSubmit={handleRegisterSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '0.9rem' }}>
+              <div>
+                <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 600, color: '#cbd5e1', marginBottom: 6 }}>
+                  Account Type
+                </label>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '0.5rem' }}>
+                  {[
+                    { id: 'CUSTOMER', label: 'Customer' },
+                    { id: 'STAFF', label: 'Staff' },
+                    { id: 'ADMIN', label: 'Admin' }
+                  ].map((r) => (
+                    <button
+                      key={r.id}
+                      type="button"
+                      onClick={() => setRegRole(r.id)}
+                      style={{
+                        padding: '0.5rem 0.25rem',
+                        borderRadius: 8,
+                        fontSize: '0.8rem',
+                        fontWeight: 600,
+                        border: regRole === r.id ? '1px solid #38bdf8' : '1px solid rgba(255, 255, 255, 0.12)',
+                        background: regRole === r.id ? 'rgba(56, 189, 248, 0.15)' : 'rgba(255, 255, 255, 0.04)',
+                        color: regRole === r.id ? '#38bdf8' : '#94a3b8',
+                        cursor: 'pointer',
+                        transition: 'all 0.15s ease'
+                      }}
+                    >
+                      {r.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
               <div>
                 <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 600, color: '#cbd5e1', marginBottom: 4 }}>
                   Full Name *
@@ -996,7 +1061,7 @@ export function LoginPage({ onLoginSuccess }) {
                   gap: '0.5rem'
                 }}
               >
-                {loading ? 'Creating Account...' : 'CREATE ACCOUNT'}
+                {loading ? 'Creating Account & Signing In...' : 'CREATE ACCOUNT & SIGN IN'}
               </button>
 
               <div style={{ textAlign: 'center', marginTop: '0.75rem', fontSize: '0.85rem', color: '#94a3b8' }}>

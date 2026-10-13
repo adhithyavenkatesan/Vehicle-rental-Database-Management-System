@@ -147,10 +147,68 @@ router.get('/stats', authenticate, (req, res, next) => {
       ORDER BY month ASC LIMIT 6
     `);
 
+    // Yearly revenue trend aggregated from payments
+    const yearlyRevenue = all(`
+      SELECT strftime('%Y', payment_date) as year,
+             SUM(amount) as revenue,
+             COUNT(id) as payment_count
+      FROM payments
+      WHERE status = 'PAID'
+      GROUP BY strftime('%Y', payment_date)
+      ORDER BY year ASC
+    `);
+
     // Additional Operational & Executive Live Metrics
     const todayBookings = get("SELECT COUNT(*) as count FROM bookings WHERE date(created_at) = date('now')").count;
     const todayRevenueRow = get("SELECT COALESCE(SUM(amount), 0) as total FROM payments WHERE status = 'PAID' AND date(payment_date) = date('now')");
     const todayRevenue = Number(todayRevenueRow.total.toFixed(2));
+
+    // Current Monthly Revenue Calculation
+    const currentMonthRevenueRow = get("SELECT COALESCE(SUM(amount), 0) as total FROM payments WHERE status = 'PAID' AND strftime('%Y-%m', payment_date) = strftime('%Y-%m', 'now')");
+    let monthRevenue = Number(currentMonthRevenueRow.total.toFixed(2));
+
+    // Latest month with revenue fallback so dashboard always displays real values upon login
+    const latestMonthRevenueRow = get(`
+      SELECT strftime('%Y-%m', payment_date) as month, COALESCE(SUM(amount), 0) as total
+      FROM payments
+      WHERE status = 'PAID'
+      GROUP BY month
+      ORDER BY month DESC
+      LIMIT 1
+    `);
+
+    const now = new Date();
+    const currentMonthLabel = now.toLocaleDateString('en-IN', { month: 'short', year: 'numeric' });
+    let monthLabel = currentMonthLabel;
+
+    if (monthRevenue === 0 && latestMonthRevenueRow && latestMonthRevenueRow.total > 0) {
+      monthRevenue = Number(latestMonthRevenueRow.total.toFixed(2));
+      const [yStr, mStr] = latestMonthRevenueRow.month.split('-');
+      const d = new Date(Number(yStr), Number(mStr) - 1, 1);
+      monthLabel = d.toLocaleDateString('en-IN', { month: 'short', year: 'numeric' });
+    }
+
+    // Current Yearly Revenue Calculation
+    const currentYearRevenueRow = get("SELECT COALESCE(SUM(amount), 0) as total FROM payments WHERE status = 'PAID' AND strftime('%Y', payment_date) = strftime('%Y', 'now')");
+    let yearRevenue = Number(currentYearRevenueRow.total.toFixed(2));
+
+    const latestYearRevenueRow = get(`
+      SELECT strftime('%Y', payment_date) as year, COALESCE(SUM(amount), 0) as total
+      FROM payments
+      WHERE status = 'PAID'
+      GROUP BY year
+      ORDER BY year DESC
+      LIMIT 1
+    `);
+
+    const currentYearLabel = `FY ${now.getFullYear()}`;
+    let yearLabel = currentYearLabel;
+
+    if (yearRevenue === 0 && latestYearRevenueRow && latestYearRevenueRow.total > 0) {
+      yearRevenue = Number(latestYearRevenueRow.total.toFixed(2));
+      yearLabel = `FY ${latestYearRevenueRow.year}`;
+    }
+
     const outstandingRow = get("SELECT COALESCE(SUM(total_amount - paid_amount), 0) as total FROM invoices WHERE payment_status != 'PAID'");
     const outstandingPayments = Number(outstandingRow.total.toFixed(2));
     const pendingApprovals = get("SELECT COUNT(*) as count FROM approvals WHERE status = 'PENDING'").count;
@@ -199,6 +257,10 @@ router.get('/stats', authenticate, (req, res, next) => {
         pendingRevenue,
         todayBookings,
         todayRevenue,
+        monthRevenue,
+        yearRevenue,
+        monthLabel,
+        yearLabel,
         outstandingPayments,
         pendingApprovals,
         todayPickups,
@@ -212,7 +274,8 @@ router.get('/stats', authenticate, (req, res, next) => {
         recentBookings,
         recentPayments,
         maintenanceAlerts,
-        monthlyRevenue
+        monthlyRevenue,
+        yearlyRevenue
       }
     });
   } catch (err) {

@@ -27,6 +27,7 @@ export function StaffDashboardPage({ onNavigate, onDispatchPickup, onProcessRetu
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [addCustomerModalOpen, setAddCustomerModalOpen] = useState(false);
+  const [revenuePeriod, setRevenuePeriod] = useState('monthly'); // 'monthly' | 'yearly' | 'daily'
 
   const fetchStaffData = async () => {
     try {
@@ -214,6 +215,85 @@ export function StaffDashboardPage({ onNavigate, onDispatchPickup, onProcessRetu
             {data?.maintenanceVehicles ?? 0}
           </div>
           <div style={{ fontSize: '0.72rem', color: 'var(--text-dim)', marginTop: '0.2rem' }}>Locked from booking</div>
+        </div>
+
+        {/* Fleet Revenue Metric (Monthly / Yearly / Daily) */}
+        <div className="glass-card" style={{ padding: '1.25rem', borderLeft: '4px solid var(--success)' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '0.5rem' }}>
+            <span style={{ color: 'var(--text-muted)', fontSize: '0.82rem', fontWeight: 600 }}>
+              {revenuePeriod === 'yearly'
+                ? 'Yearly Revenue'
+                : revenuePeriod === 'daily'
+                ? "Today's Revenue"
+                : 'Monthly Revenue'}
+            </span>
+            <div
+              style={{
+                display: 'inline-flex',
+                background: 'rgba(255, 255, 255, 0.06)',
+                borderRadius: '5px',
+                padding: '2px',
+                border: '1px solid var(--border-subtle)'
+              }}
+            >
+              {[
+                { key: 'monthly', label: 'Mo' },
+                { key: 'yearly', label: 'Yr' },
+                { key: 'daily', label: 'Day' }
+              ].map(({ key, label }) => (
+                <button
+                  key={key}
+                  type="button"
+                  onClick={() => setRevenuePeriod(key)}
+                  style={{
+                    border: 'none',
+                    background: revenuePeriod === key ? 'var(--primary)' : 'transparent',
+                    color: revenuePeriod === key ? '#fff' : 'var(--text-muted)',
+                    fontSize: '0.65rem',
+                    fontWeight: 700,
+                    padding: '2px 6px',
+                    borderRadius: '3px',
+                    cursor: 'pointer',
+                    transition: 'all 0.15s ease'
+                  }}
+                  title={`View ${key} revenue`}
+                >
+                  {label}
+                </button>
+              ))}
+            </div>
+          </div>
+          <div style={{ fontSize: '1.85rem', fontWeight: 800, marginTop: '0.4rem', color: 'var(--success)', letterSpacing: '-0.02em' }}>
+            ₹{
+              revenuePeriod === 'yearly'
+                ? (data?.yearRevenue?.toLocaleString('en-IN') ?? '0')
+                : revenuePeriod === 'daily'
+                ? (data?.todayRevenue?.toLocaleString('en-IN') ?? '0')
+                : (data?.monthRevenue?.toLocaleString('en-IN') ?? '0')
+            }
+          </div>
+          <div style={{ fontSize: '0.72rem', color: 'var(--text-dim)', marginTop: '0.2rem' }}>
+            {revenuePeriod === 'yearly'
+              ? `Reconciled for ${data?.yearLabel || 'current year'}`
+              : revenuePeriod === 'daily'
+              ? 'Settled payments today'
+              : `Reconciled for ${data?.monthLabel || 'current month'}`}
+          </div>
+          <div
+            style={{
+              display: 'flex',
+              gap: '0.5rem',
+              marginTop: '0.4rem',
+              paddingTop: '0.35rem',
+              borderTop: '1px solid var(--border-subtle)',
+              fontSize: '0.7rem',
+              color: 'var(--text-muted)'
+            }}
+          >
+            <span>Mo: <strong style={{ color: 'var(--text-main)' }}>₹{(data?.monthRevenue || 0).toLocaleString('en-IN')}</strong></span>
+            <span>•</span>
+            <span>Yr: <strong style={{ color: 'var(--text-main)' }}>₹{(data?.yearRevenue || 0).toLocaleString('en-IN')}</strong></span>
+          </div>
         </div>
       </div>
 

@@ -806,13 +806,14 @@ function seedDatabase(fresh = true) {
         ]
       ).lastInsertRowid;
 
+      const payDate = i === 0 ? new Date().toISOString().replace('T', ' ').substring(0, 19) : bk.start_date;
       run(
         `INSERT INTO payments (
           payment_ref, invoice_id, booking_id, rental_id, customer_id, amount, payment_date,
           payment_method, status, transaction_ref, notes, recorded_by
         ) VALUES (?, ?, ?, ?, ?, ?, ?, 'CARD', 'PAID', ?, 'HDFC Credit Card Advance Rental', ?)`,
         [
-          `PAY-ACT-${500 + i}`, invId, bk.id, rentRow.id, bk.customer_id, bk.estimated_total, bk.start_date,
+          `PAY-ACT-${500 + i}`, invId, bk.id, rentRow.id, bk.customer_id, bk.estimated_total, payDate,
           `TXN-CARD-994411${i}`, r.staff
         ]
       );
