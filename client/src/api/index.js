@@ -66,15 +66,18 @@ export const api = {
   getCategories: () => request('/categories'),
   createCategory: (data) => request('/categories', { method: 'POST', body: JSON.stringify(data) }),
   updateCategory: (id, data) => request(`/categories/${id}`, { method: 'PUT', body: JSON.stringify(data) }),
+  deleteCategory: (id) => request(`/categories/${id}`, { method: 'DELETE' }),
   getLocations: () => request('/locations'),
   createLocation: (data) => request('/locations', { method: 'POST', body: JSON.stringify(data) }),
   updateLocation: (id, data) => request(`/locations/${id}`, { method: 'PUT', body: JSON.stringify(data) }),
+  deleteLocation: (id) => request(`/locations/${id}`, { method: 'DELETE' }),
 
   // Branches
   getBranches: () => request('/branches'),
   getBranch: (id) => request(`/branches/${id}`),
   createBranch: (data) => request('/branches', { method: 'POST', body: JSON.stringify(data) }),
   updateBranch: (id, data) => request(`/branches/${id}`, { method: 'PUT', body: JSON.stringify(data) }),
+  deleteBranch: (id) => request(`/branches/${id}`, { method: 'DELETE' }),
 
   // Rate Cards
   getRates: () => request('/rates'),
@@ -82,6 +85,7 @@ export const api = {
   calculateRate: (data) => request('/rates/calculate', { method: 'POST', body: JSON.stringify(data) }),
   createRate: (data) => request('/rates', { method: 'POST', body: JSON.stringify(data) }),
   updateRate: (id, data) => request(`/rates/${id}`, { method: 'PUT', body: JSON.stringify(data) }),
+  deleteRate: (id) => request(`/rates/${id}`, { method: 'DELETE' }),
 
   // Customers
   getCustomers: (params = {}) => {
@@ -91,11 +95,13 @@ export const api = {
   getCustomer: (id) => request(`/customers/${id}`),
   createCustomer: (data) => request('/customers', { method: 'POST', body: JSON.stringify(data) }),
   updateCustomer: (id, data) => request(`/customers/${id}`, { method: 'PUT', body: JSON.stringify(data) }),
+  deleteCustomer: (id) => request(`/customers/${id}`, { method: 'DELETE' }),
 
   // Staff
   getStaff: () => request('/staff'),
   createStaff: (data) => request('/staff', { method: 'POST', body: JSON.stringify(data) }),
   updateStaff: (id, data) => request(`/staff/${id}`, { method: 'PUT', body: JSON.stringify(data) }),
+  deleteStaff: (id) => request(`/staff/${id}`, { method: 'DELETE' }),
 
   // Bookings
   getBookings: (params = {}) => {
@@ -104,7 +110,9 @@ export const api = {
   },
   getBooking: (id) => request(`/bookings/${id}`),
   createBooking: (data) => request('/bookings', { method: 'POST', body: JSON.stringify(data) }),
+  updateBooking: (id, data) => request(`/bookings/${id}`, { method: 'PUT', body: JSON.stringify(data) }),
   updateBookingStatus: (id, data) => request(`/bookings/${id}/status`, { method: 'PATCH', body: JSON.stringify(data) }),
+  deleteBooking: (id) => request(`/bookings/${id}`, { method: 'DELETE' }),
 
   // Rental Agreements
   getAgreements: () => request('/agreements'),
@@ -154,6 +162,8 @@ export const api = {
   },
   getFuelStats: () => request('/fuel/stats'),
   createFuelLog: (data) => request('/fuel', { method: 'POST', body: JSON.stringify(data) }),
+  updateFuelLog: (id, data) => request(`/fuel/${id}`, { method: 'PUT', body: JSON.stringify(data) }),
+  deleteFuelLog: (id) => request(`/fuel/${id}`, { method: 'DELETE' }),
 
   // Fleet Expenses
   getExpenses: (params = {}) => {
@@ -162,6 +172,8 @@ export const api = {
   },
   getExpenseSummary: () => request('/expenses/summary'),
   createExpense: (data) => request('/expenses', { method: 'POST', body: JSON.stringify(data) }),
+  updateExpense: (id, data) => request(`/expenses/${id}`, { method: 'PUT', body: JSON.stringify(data) }),
+  deleteExpense: (id) => request(`/expenses/${id}`, { method: 'DELETE' }),
 
   // Advanced Fleet Analytics
   getProfitabilityAnalytics: () => request('/analytics/profitability'),
@@ -197,6 +209,8 @@ export const api = {
     return request(`/maintenance${query ? `?${query}` : ''}`);
   },
   createMaintenance: (data) => request('/maintenance', { method: 'POST', body: JSON.stringify(data) }),
+  updateMaintenance: (id, data) => request(`/maintenance/${id}`, { method: 'PUT', body: JSON.stringify(data) }),
+  deleteMaintenance: (id) => request(`/maintenance/${id}`, { method: 'DELETE' }),
   completeMaintenance: (id, data) => request(`/maintenance/${id}/complete`, { method: 'PATCH', body: JSON.stringify(data) }),
 
   // Dashboard & Reports

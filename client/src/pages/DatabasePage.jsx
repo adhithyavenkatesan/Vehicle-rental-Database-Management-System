@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { api } from '../api';
 import { useToast } from '../context/ToastContext';
+import { Modal } from '../components/Modal';
 import {
   Database,
   Table,
@@ -10,7 +11,12 @@ import {
   ShieldCheck,
   CheckCircle,
   FileCode,
-  HardDrive
+  HardDrive,
+  Plus,
+  Edit,
+  Trash2,
+  AlertTriangle,
+  X
 } from 'lucide-react';
 
 export function DatabasePage() {
@@ -23,6 +29,16 @@ export function DatabasePage() {
   const [tableData, setTableData] = useState(null);
   const [tableLoading, setTableLoading] = useState(false);
   const [page, setPage] = useState(1);
+
+  // Row CRUD state
+  const [insertModalOpen, setInsertModalOpen] = useState(false);
+  const [insertForm, setInsertForm] = useState({});
+  const [editModalOpen, setEditModalOpen] = useState(false);
+  const [editingRow, setEditingRow] = useState(null);
+  const [editForm, setEditForm] = useState({});
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+  const [rowToDelete, setRowToDelete] = useState(null);
+  const [actionLoading, setActionLoading] = useState(false);
 
   // SQL Console state
   const [sqlQuery, setSqlQuery] = useState(
@@ -88,6 +104,130 @@ export function DatabasePage() {
       showToast('SQL Execution Error', 'error');
     } finally {
       setQueryLoading(false);
+    }
+  };
+
+  const openInsertModal = () => {
+    const initial = {};
+    if (tableData?.columns) {
+      tableData.columns.forEach((col) => {
+        if (col.name !== 'id' && !col.pk) {
+          initial[col.name] = col.dflt_value ? String(col.dflt_value).replace(/^'|'$/g, '') : '';
+        }
+      });
+    }
+    setInsertForm(initial);
+    setInsertModalOpen(true);
+  };
+
+  const handleInsertSubmit = async (e) => {
+    e.preventDefault();
+    setActionLoading(true);
+    try {
+      const payload = {};
+      tableData.columns.forEach((col) => {
+        if (col.name !== 'id' && !col.pk) {
+          const val = insertForm[col.name];
+          if (val === '' || val === undefined) {
+            if (col.notnull) {
+              payload[col.name] = '';
+            } else {
+              payload[col.name] = null;
+            }
+          } else if (col.type && (col.type.includes('INT') || col.type.includes('NUMERIC') || col.type.includes('REAL'))) {
+            payload[col.name] = isNaN(Number(val)) ? val : Number(val);
+          } else {
+            payload[col.name] = val;
+          }
+        }
+      });
+
+      const res = await api.insertTableRow(selectedTable, payload);
+      if (res.success) {
+        showToast(`Record #${res.id} inserted into ${selectedTable}`, 'success');
+        setInsertModalOpen(false);
+        fetchTableRows(selectedTable, page);
+        fetchOverview();
+      } else {
+        showToast(res.message || 'Insert failed', 'error');
+      }
+    } catch (err) {
+      showToast(err.message || 'Insert failed', 'error');
+    } finally {
+      setActionLoading(false);
+    }
+  };
+
+  const openEditRowModal = (row) => {
+    setEditingRow(row);
+    const initial = {};
+    if (tableData?.columns) {
+      tableData.columns.forEach((col) => {
+        if (col.name !== 'id' && !col.pk) {
+          initial[col.name] = row[col.name] !== null && row[col.name] !== undefined ? String(row[col.name]) : '';
+        }
+      });
+    }
+    setEditForm(initial);
+    setEditModalOpen(true);
+  };
+
+  const handleEditRowSubmit = async (e) => {
+    e.preventDefault();
+    setActionLoading(true);
+    try {
+      const payload = {};
+      tableData.columns.forEach((col) => {
+        if (col.name !== 'id' && !col.pk) {
+          const val = editForm[col.name];
+          if (val === '' || val === undefined) {
+            if (col.notnull) {
+              payload[col.name] = '';
+            } else {
+              payload[col.name] = null;
+            }
+          } else if (col.type && (col.type.includes('INT') || col.type.includes('NUMERIC') || col.type.includes('REAL'))) {
+            payload[col.name] = isNaN(Number(val)) ? val : Number(val);
+          } else {
+            payload[col.name] = val;
+          }
+        }
+      });
+
+      const res = await api.updateTableRow(selectedTable, editingRow.id, payload);
+      if (res.success) {
+        showToast(`Record #${editingRow.id} updated in ${selectedTable}`, 'success');
+        setEditModalOpen(false);
+        setEditingRow(null);
+        fetchTableRows(selectedTable, page);
+      } else {
+        showToast(res.message || 'Update failed', 'error');
+      }
+    } catch (err) {
+      showToast(err.message || 'Update failed', 'error');
+    } finally {
+      setActionLoading(false);
+    }
+  };
+
+  const handleDeleteRowSubmit = async () => {
+    if (!rowToDelete) return;
+    setActionLoading(true);
+    try {
+      const res = await api.deleteTableRow(selectedTable, rowToDelete.id);
+      if (res.success) {
+        showToast(`Record #${rowToDelete.id} deleted from ${selectedTable}`, 'success');
+        setDeleteModalOpen(false);
+        setRowToDelete(null);
+        fetchTableRows(selectedTable, page);
+        fetchOverview();
+      } else {
+        showToast(res.message || 'Delete failed', 'error');
+      }
+    } catch (err) {
+      showToast(err.message || 'Delete failed', 'error');
+    } finally {
+      setActionLoading(false);
     }
   };
 
@@ -302,7 +442,7 @@ export function DatabasePage() {
 
         {/* Selected Table Data & Columns Explorer */}
         <div className="glass-card" style={{ padding: '1.5rem' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem', flexWrap: 'wrap', gap: '0.5rem' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem', flexWrap: 'wrap', gap: '0.75rem' }}>
             <div>
               <h4 style={{ fontSize: '1.15rem', fontWeight: 700, fontFamily: 'var(--font-mono)' }}>
                 Table: {selectedTable}
@@ -312,28 +452,38 @@ export function DatabasePage() {
               </div>
             </div>
 
-            {/* Pagination */}
-            {tableData && tableData.totalPages > 1 && (
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.82rem' }}>
-                <button
-                  disabled={page <= 1}
-                  onClick={() => fetchTableRows(selectedTable, page - 1)}
-                  className="btn btn-secondary btn-sm"
-                >
-                  Prev
-                </button>
-                <span>
-                  Page {page} of {tableData.totalPages}
-                </span>
-                <button
-                  disabled={page >= tableData.totalPages}
-                  onClick={() => fetchTableRows(selectedTable, page + 1)}
-                  className="btn btn-secondary btn-sm"
-                >
-                  Next
-                </button>
-              </div>
-            )}
+            <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'center', flexWrap: 'wrap' }}>
+              <button
+                onClick={openInsertModal}
+                className="btn btn-primary btn-sm"
+                style={{ display: 'inline-flex', alignItems: 'center', gap: '0.35rem' }}
+              >
+                <Plus size={14} /> Insert Row
+              </button>
+
+              {/* Pagination */}
+              {tableData && tableData.totalPages > 1 && (
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.82rem' }}>
+                  <button
+                    disabled={page <= 1}
+                    onClick={() => fetchTableRows(selectedTable, page - 1)}
+                    className="btn btn-secondary btn-sm"
+                  >
+                    Prev
+                  </button>
+                  <span>
+                    Page {page} of {tableData.totalPages}
+                  </span>
+                  <button
+                    disabled={page >= tableData.totalPages}
+                    onClick={() => fetchTableRows(selectedTable, page + 1)}
+                    className="btn btn-secondary btn-sm"
+                  >
+                    Next
+                  </button>
+                </div>
+              )}
+            </div>
           </div>
 
           {/* Foreign Keys pill if any */}
@@ -374,6 +524,7 @@ export function DatabasePage() {
               <table className="data-table">
                 <thead>
                   <tr>
+                    <th style={{ width: 80 }}>Actions</th>
                     {tableData?.columns?.map((col) => (
                       <th key={col.cid}>
                         <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
@@ -388,6 +539,31 @@ export function DatabasePage() {
                 <tbody>
                   {tableData?.rows?.map((row, i) => (
                     <tr key={i}>
+                      <td>
+                        {row.id !== undefined && (
+                          <div style={{ display: 'flex', gap: '0.35rem' }}>
+                            <button
+                              onClick={() => openEditRowModal(row)}
+                              className="btn btn-secondary btn-sm"
+                              title="Edit Record"
+                              style={{ padding: '0.25rem 0.45rem', fontSize: '0.72rem' }}
+                            >
+                              <Edit size={12} />
+                            </button>
+                            <button
+                              onClick={() => {
+                                setRowToDelete(row);
+                                setDeleteModalOpen(true);
+                              }}
+                              className="btn btn-danger btn-sm"
+                              title="Delete Record"
+                              style={{ padding: '0.25rem 0.45rem', fontSize: '0.72rem' }}
+                            >
+                              <Trash2 size={12} />
+                            </button>
+                          </div>
+                        )}
+                      </td>
                       {tableData.columns.map((col) => (
                         <td key={col.cid} style={{ fontFamily: 'var(--font-mono)', fontSize: '0.82rem', whiteSpace: 'nowrap' }}>
                           {row[col.name] !== null && row[col.name] !== undefined ? (
@@ -405,6 +581,129 @@ export function DatabasePage() {
           )}
         </div>
       </div>
+
+      {/* Insert Row Modal */}
+      <Modal
+        isOpen={insertModalOpen}
+        onClose={() => setInsertModalOpen(false)}
+        title={`Insert Row into ${selectedTable}`}
+        maxWidth={620}
+      >
+        <form onSubmit={handleInsertSubmit}>
+          <div style={{ maxHeight: '60vh', overflowY: 'auto', paddingRight: '0.5rem', display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+            <p style={{ margin: 0, fontSize: '0.82rem', color: 'var(--text-dim)' }}>
+              Enter values for columns below. Primary key (id) will auto-generate.
+            </p>
+            {tableData?.columns?.filter((c) => c.name !== 'id' && !c.pk).map((col) => (
+              <div key={col.cid}>
+                <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 600, marginBottom: '0.2rem', fontFamily: 'var(--font-mono)' }}>
+                  {col.name} <span style={{ color: 'var(--text-dim)', fontWeight: 400 }}>({col.type || 'TEXT'}){col.notnull ? ' *' : ''}</span>
+                </label>
+                <input
+                  type={col.type && (col.type.includes('INT') || col.type.includes('REAL') || col.type.includes('NUMERIC')) ? 'number' : 'text'}
+                  step="any"
+                  required={Boolean(col.notnull && !col.dflt_value)}
+                  placeholder={col.dflt_value ? `Default: ${col.dflt_value}` : (col.notnull ? 'Required' : 'Optional (NULL)')}
+                  value={insertForm[col.name] ?? ''}
+                  onChange={(e) => setInsertForm({ ...insertForm, [col.name]: e.target.value })}
+                  style={{ fontFamily: 'var(--font-mono)', fontSize: '0.85rem' }}
+                />
+              </div>
+            ))}
+          </div>
+          <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.75rem', marginTop: '1.25rem' }}>
+            <button type="button" onClick={() => setInsertModalOpen(false)} className="btn btn-secondary">
+              Cancel
+            </button>
+            <button type="submit" disabled={actionLoading} className="btn btn-primary">
+              {actionLoading ? 'Inserting...' : 'Insert Record'}
+            </button>
+          </div>
+        </form>
+      </Modal>
+
+      {/* Edit Row Modal */}
+      <Modal
+        isOpen={editModalOpen}
+        onClose={() => setEditModalOpen(false)}
+        title={`Edit Record #${editingRow?.id} in ${selectedTable}`}
+        maxWidth={620}
+      >
+        {editingRow && (
+          <form onSubmit={handleEditRowSubmit}>
+            <div style={{ maxHeight: '60vh', overflowY: 'auto', paddingRight: '0.5rem', display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+              <p style={{ margin: 0, fontSize: '0.82rem', color: 'var(--text-dim)' }}>
+                Modifying fields for primary key ID: <strong>{editingRow.id}</strong>.
+              </p>
+              {tableData?.columns?.filter((c) => c.name !== 'id' && !c.pk).map((col) => (
+                <div key={col.cid}>
+                  <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 600, marginBottom: '0.2rem', fontFamily: 'var(--font-mono)' }}>
+                    {col.name} <span style={{ color: 'var(--text-dim)', fontWeight: 400 }}>({col.type || 'TEXT'}){col.notnull ? ' *' : ''}</span>
+                  </label>
+                  <input
+                    type={col.type && (col.type.includes('INT') || col.type.includes('REAL') || col.type.includes('NUMERIC')) ? 'number' : 'text'}
+                    step="any"
+                    required={Boolean(col.notnull)}
+                    value={editForm[col.name] ?? ''}
+                    onChange={(e) => setEditForm({ ...editForm, [col.name]: e.target.value })}
+                    style={{ fontFamily: 'var(--font-mono)', fontSize: '0.85rem' }}
+                  />
+                </div>
+              ))}
+            </div>
+            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.75rem', marginTop: '1.25rem' }}>
+              <button type="button" onClick={() => setEditModalOpen(false)} className="btn btn-secondary">
+                Cancel
+              </button>
+              <button type="submit" disabled={actionLoading} className="btn btn-primary">
+                {actionLoading ? 'Saving...' : 'Update Record'}
+              </button>
+            </div>
+          </form>
+        )}
+      </Modal>
+
+      {/* Delete Row Modal */}
+      <Modal
+        isOpen={deleteModalOpen}
+        onClose={() => setDeleteModalOpen(false)}
+        title={`Delete Record from ${selectedTable}`}
+        maxWidth={440}
+      >
+        {rowToDelete && (
+          <div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem', marginBottom: '1rem' }}>
+              <div style={{ width: 36, height: 36, borderRadius: '50%', background: 'rgba(239, 68, 68, 0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--danger)' }}>
+                <AlertTriangle size={20} />
+              </div>
+              <h4 style={{ margin: 0, fontSize: '1rem', fontWeight: 700 }}>Confirm Deletion</h4>
+            </div>
+            <p style={{ color: 'var(--text-dim)', fontSize: '0.9rem', lineHeight: 1.5, margin: '0 0 1.25rem 0' }}>
+              Are you sure you want to delete row with primary key ID <strong>#{rowToDelete.id}</strong> from table <strong>{selectedTable}</strong>? This operation cannot be undone.
+            </p>
+            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.75rem' }}>
+              <button
+                type="button"
+                onClick={() => {
+                  setDeleteModalOpen(false);
+                  setRowToDelete(null);
+                }}
+                className="btn btn-secondary"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                disabled={actionLoading}
+                onClick={handleDeleteRowSubmit}
+                className="btn btn-danger"
+              >
+                {actionLoading ? 'Deleting...' : 'Delete Row'}
+              </button>
+            </div>
+          </div>
+        )}
+      </Modal>
     </div>
   );
 }

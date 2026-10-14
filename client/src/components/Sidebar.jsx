@@ -74,9 +74,9 @@ export function Sidebar({ currentTab, onSelectTab, isOpen, onClose }) {
       title: 'MANAGEMENT',
       items: [
         { id: 'approvals', label: 'Approvals Queue', icon: CheckSquare, roles: ['ADMIN', 'STAFF'] },
-        { id: 'branches', label: 'Branch Management', icon: Building2, roles: ['ADMIN'] },
-        { id: 'staff', label: 'Staff Management', icon: UserCheck, roles: ['ADMIN'] },
-        { id: 'rates', label: 'Rate Cards', icon: Tags, roles: ['ADMIN'] }
+        { id: 'branches', label: 'Branch Management', icon: Building2, roles: ['ADMIN', 'STAFF'] },
+        { id: 'staff', label: 'Staff Management', icon: UserCheck, roles: ['ADMIN', 'STAFF'] },
+        { id: 'rates', label: 'Rate Cards', icon: Tags, roles: ['ADMIN', 'STAFF'] }
       ]
     },
     {
@@ -90,7 +90,7 @@ export function Sidebar({ currentTab, onSelectTab, isOpen, onClose }) {
       title: 'SYSTEM',
       items: [
         { id: 'tickets', label: 'Support Tickets', icon: HelpCircle, roles: ['ADMIN', 'STAFF'] },
-        { id: 'database', label: 'Database (DBMS)', icon: Database, roles: ['ADMIN'] },
+        { id: 'database', label: 'Database (DBMS)', icon: Database, roles: ['ADMIN', 'STAFF'] },
         { id: 'audit', label: 'Audit Logs', icon: ShieldAlert, roles: ['ADMIN'] },
         { id: 'settings', label: 'System Settings', icon: Settings, roles: ['ADMIN'] }
       ]

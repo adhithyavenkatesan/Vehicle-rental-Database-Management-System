@@ -19,7 +19,9 @@ import {
   DollarSign,
   AlertCircle,
   FileText,
-  UserPlus
+  UserPlus,
+  Edit,
+  Trash2
 } from 'lucide-react';
 
 export function BookingsPage({ initialBookingVehicle = null, onClearInitialVehicle, onDispatchPickup }) {
@@ -42,6 +44,22 @@ export function BookingsPage({ initialBookingVehicle = null, onClearInitialVehic
   const [detailsModalOpen, setDetailsModalOpen] = useState(false);
   const [selectedAgreement, setSelectedAgreement] = useState(null);
   const [agreementModalOpen, setAgreementModalOpen] = useState(false);
+
+  // Edit & Delete Booking State
+  const [editingBooking, setEditingBooking] = useState(null);
+  const [editBookingModalOpen, setEditBookingModalOpen] = useState(false);
+  const [editBookingForm, setEditBookingForm] = useState({
+    vehicle_id: '',
+    start_date: '',
+    end_date: '',
+    pickup_location_id: '',
+    return_location_id: '',
+    daily_rate: 65,
+    notes: '',
+    status: 'CONFIRMED'
+  });
+  const [bookingToDelete, setBookingToDelete] = useState(null);
+  const [deleteBookingModalOpen, setDeleteBookingModalOpen] = useState(false);
 
   const handleCustomerCreated = (newCustomer) => {
     setCustomers((prev) => [newCustomer, ...prev]);
@@ -191,6 +209,48 @@ export function BookingsPage({ initialBookingVehicle = null, onClearInitialVehic
     }
   };
 
+  const handleOpenEditBooking = (b) => {
+    setEditingBooking(b);
+    setEditBookingForm({
+      vehicle_id: b.vehicle_id || '',
+      start_date: b.start_date ? b.start_date.slice(0, 16) : '',
+      end_date: b.end_date ? b.end_date.slice(0, 16) : '',
+      pickup_location_id: b.pickup_location_id || locations[0]?.id || '',
+      return_location_id: b.return_location_id || locations[0]?.id || '',
+      daily_rate: b.daily_rate || 65,
+      notes: b.notes || '',
+      status: b.status || 'CONFIRMED'
+    });
+    setEditBookingModalOpen(true);
+  };
+
+  const handleEditBookingSubmit = async (e) => {
+    e.preventDefault();
+    if (!editingBooking) return;
+    try {
+      await api.updateBooking(editingBooking.id, editBookingForm);
+      showToast('Booking reservation updated successfully', 'success');
+      setEditBookingModalOpen(false);
+      setEditingBooking(null);
+      fetchBookings();
+    } catch (err) {
+      showToast(err.message || 'Failed to update booking', 'error');
+    }
+  };
+
+  const handleConfirmDeleteBooking = async () => {
+    if (!bookingToDelete) return;
+    try {
+      const res = await api.deleteBooking(bookingToDelete.id);
+      showToast(res.message || 'Booking reservation deleted', 'success');
+      setDeleteBookingModalOpen(false);
+      setBookingToDelete(null);
+      fetchBookings();
+    } catch (err) {
+      showToast(err.message || 'Failed to delete booking', 'error');
+    }
+  };
+
   const isStaffOrAdmin = user?.role === 'ADMIN' || user?.role === 'STAFF';
 
   return (
@@ -329,15 +389,41 @@ export function BookingsPage({ initialBookingVehicle = null, onClearInitialVehic
                           </button>
                         )}
 
+                        {/* Edit Booking Button for Staff/Admin */}
+                        {isStaffOrAdmin && b.status !== 'COMPLETED' && (
+                          <button
+                            onClick={() => handleOpenEditBooking(b)}
+                            className="btn btn-secondary btn-sm"
+                            title="Edit Reservation"
+                          >
+                            <Edit size={13} />
+                          </button>
+                        )}
+
                         {/* Cancel Button */}
                         {(b.status === 'CONFIRMED' || b.status === 'PENDING') && (
                           <button
                             onClick={() => handleCancelBooking(b)}
                             className="btn btn-secondary btn-sm"
-                            style={{ color: 'var(--danger)' }}
+                            style={{ color: 'var(--warning)' }}
                             title="Cancel Reservation"
                           >
                             <XCircle size={14} />
+                          </button>
+                        )}
+
+                        {/* Delete Booking Button for Staff/Admin */}
+                        {isStaffOrAdmin && b.status !== 'ACTIVE' && (
+                          <button
+                            onClick={() => {
+                              setBookingToDelete(b);
+                              setDeleteBookingModalOpen(true);
+                            }}
+                            className="btn btn-secondary btn-sm"
+                            style={{ color: 'var(--danger)', borderColor: 'rgba(239, 68, 68, 0.3)' }}
+                            title="Delete Reservation"
+                          >
+                            <Trash2 size={13} />
                           </button>
                         )}
                       </div>
@@ -598,6 +684,113 @@ export function BookingsPage({ initialBookingVehicle = null, onClearInitialVehic
         onCustomerCreated={handleCustomerCreated}
         zIndex={250}
       />
+
+      {/* Edit Booking Modal */}
+      {editingBooking && (
+        <Modal isOpen={editBookingModalOpen} onClose={() => setEditBookingModalOpen(false)} title={`Edit Booking: ${editingBooking.booking_ref}`} maxWidth={640}>
+          <form onSubmit={handleEditBookingSubmit}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+              <div>
+                <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 600, marginBottom: '0.25rem' }}>Assigned Vehicle</label>
+                <select
+                  value={editBookingForm.vehicle_id}
+                  onChange={(e) => setEditBookingForm({ ...editBookingForm, vehicle_id: e.target.value })}
+                >
+                  {vehicles.map((v) => (
+                    <option key={v.id} value={v.id}>
+                      {v.make} {v.model} ({v.reg_number}) - ₹{v.daily_rate}/day [{v.category_name}]
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem' }}>
+                <div>
+                  <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 600, marginBottom: '0.25rem' }}>Pickup Date & Time *</label>
+                  <input
+                    type="datetime-local"
+                    required
+                    value={editBookingForm.start_date}
+                    onChange={(e) => setEditBookingForm({ ...editBookingForm, start_date: e.target.value })}
+                  />
+                </div>
+                <div>
+                  <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 600, marginBottom: '0.25rem' }}>Return Date & Time *</label>
+                  <input
+                    type="datetime-local"
+                    required
+                    value={editBookingForm.end_date}
+                    onChange={(e) => setEditBookingForm({ ...editBookingForm, end_date: e.target.value })}
+                  />
+                </div>
+              </div>
+
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem' }}>
+                <div>
+                  <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 600, marginBottom: '0.25rem' }}>Daily Rate (₹)</label>
+                  <input
+                    type="number"
+                    value={editBookingForm.daily_rate}
+                    onChange={(e) => setEditBookingForm({ ...editBookingForm, daily_rate: e.target.value })}
+                  />
+                </div>
+                <div>
+                  <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 600, marginBottom: '0.25rem' }}>Reservation Status</label>
+                  <select
+                    value={editBookingForm.status}
+                    onChange={(e) => setEditBookingForm({ ...editBookingForm, status: e.target.value })}
+                  >
+                    <option value="PENDING">PENDING</option>
+                    <option value="CONFIRMED">CONFIRMED</option>
+                    <option value="CANCELLED">CANCELLED</option>
+                  </select>
+                </div>
+              </div>
+
+              <div>
+                <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 600, marginBottom: '0.25rem' }}>Special Booking Notes</label>
+                <textarea
+                  rows={2}
+                  value={editBookingForm.notes}
+                  onChange={(e) => setEditBookingForm({ ...editBookingForm, notes: e.target.value })}
+                  placeholder="Optional customer requests..."
+                />
+              </div>
+
+              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.75rem', marginTop: '0.5rem' }}>
+                <button type="button" onClick={() => setEditBookingModalOpen(false)} className="btn btn-secondary">
+                  Cancel
+                </button>
+                <button type="submit" className="btn btn-primary">
+                  Save Changes
+                </button>
+              </div>
+            </div>
+          </form>
+        </Modal>
+      )}
+
+      {/* Delete Booking Confirmation Modal */}
+      {bookingToDelete && (
+        <Modal isOpen={deleteBookingModalOpen} onClose={() => setDeleteBookingModalOpen(false)} title="Confirm Booking Deletion" maxWidth={480}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+            <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem', lineHeight: 1.5 }}>
+              Are you sure you want to delete reservation <strong>{bookingToDelete.booking_ref}</strong> for vehicle {bookingToDelete.make} {bookingToDelete.model}?
+            </p>
+            <p style={{ fontSize: '0.8rem', color: 'var(--text-dim)', background: 'var(--bg-tertiary)', padding: '0.75rem', borderRadius: 'var(--radius-sm)' }}>
+              Note: This action permanently deletes the reservation record and releases any allocated vehicle hold back into AVAILABLE status.
+            </p>
+            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.75rem', marginTop: '0.5rem' }}>
+              <button type="button" onClick={() => setDeleteBookingModalOpen(false)} className="btn btn-secondary">
+                Cancel
+              </button>
+              <button type="button" onClick={handleConfirmDeleteBooking} className="btn btn-danger" style={{ background: 'var(--danger)', color: '#fff' }}>
+                Confirm Delete
+              </button>
+            </div>
+          </div>
+        </Modal>
+      )}
     </div>
   );
 }

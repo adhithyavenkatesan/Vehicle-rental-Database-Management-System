@@ -346,7 +346,7 @@ router.put('/:id', authenticate, authorize(['ADMIN', 'STAFF']), (req, res, next)
  * DELETE /api/vehicles/:id
  * Delete or deactivate vehicle (Admin only)
  */
-router.delete('/:id', authenticate, authorize(['ADMIN']), (req, res, next) => {
+router.delete('/:id', authenticate, authorize(['ADMIN', 'STAFF']), (req, res, next) => {
   try {
     const vehicleId = req.params.id;
     const vehicle = get('SELECT * FROM vehicles WHERE id = ?', [vehicleId]);

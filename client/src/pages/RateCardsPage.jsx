@@ -1,11 +1,31 @@
 import React, { useState, useEffect } from 'react';
 import { api } from '../api';
-import { Tags, Plus, Calculator, X, CheckCircle, Percent } from 'lucide-react';
+import { Tags, Plus, Calculator, X, CheckCircle, Percent, Edit, Trash2 } from 'lucide-react';
 
 export function RateCardsPage() {
   const [rateCards, setRateCards] = useState([]);
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
+
+  // Modals state
+  const [createModalOpen, setCreateModalOpen] = useState(false);
+  const [editingRate, setEditingRate] = useState(null);
+  const [editModalOpen, setEditModalOpen] = useState(false);
+  const [rateToDelete, setRateToDelete] = useState(null);
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+  const [rateForm, setRateForm] = useState({
+    category_id: '',
+    code: '',
+    name: '',
+    daily_rate: 1500,
+    hourly_rate: 150,
+    weekly_rate: 9000,
+    monthly_rate: 32000,
+    weekend_multiplier: 1.15,
+    extra_km_rate: 15,
+    extra_hour_rate: 250,
+    security_deposit: 5000
+  });
 
   // Rate calculator tool
   const [calcCatId, setCalcCatId] = useState('');
@@ -54,10 +74,70 @@ export function RateCardsPage() {
     }
   };
 
+  const handleCreateRate = async (e) => {
+    e.preventDefault();
+    try {
+      const res = await api.createRate(rateForm);
+      if (res.success) {
+        setCreateModalOpen(false);
+        fetchRates();
+      }
+    } catch (err) {
+      alert(err.message || 'Failed to create rate card');
+    }
+  };
+
+  const handleOpenEditRate = (rc) => {
+    setEditingRate(rc);
+    setRateForm({
+      category_id: rc.category_id || '',
+      code: rc.code || '',
+      name: rc.name || '',
+      daily_rate: rc.daily_rate || 1500,
+      hourly_rate: rc.hourly_rate || 150,
+      weekly_rate: rc.weekly_rate || 9000,
+      monthly_rate: rc.monthly_rate || 32000,
+      weekend_multiplier: rc.weekend_multiplier || 1.15,
+      extra_km_rate: rc.extra_km_rate || 15,
+      extra_hour_rate: rc.extra_hour_rate || 250,
+      security_deposit: rc.security_deposit || 5000
+    });
+    setEditModalOpen(true);
+  };
+
+  const handleUpdateRate = async (e) => {
+    e.preventDefault();
+    if (!editingRate) return;
+    try {
+      const res = await api.updateRate(editingRate.id, rateForm);
+      if (res.success) {
+        setEditModalOpen(false);
+        setEditingRate(null);
+        fetchRates();
+      }
+    } catch (err) {
+      alert(err.message || 'Failed to update rate card');
+    }
+  };
+
+  const handleConfirmDeleteRate = async () => {
+    if (!rateToDelete) return;
+    try {
+      const res = await api.deleteRate(rateToDelete.id);
+      if (res.success) {
+        setDeleteModalOpen(false);
+        setRateToDelete(null);
+        fetchRates();
+      }
+    } catch (err) {
+      alert(err.message || 'Failed to delete rate card');
+    }
+  };
+
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
       {/* Top Banner */}
-      <div className="card" style={{ padding: '1.25rem' }}>
+      <div className="card" style={{ padding: '1.25rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem' }}>
           <div
             style={{
@@ -82,6 +162,30 @@ export function RateCardsPage() {
             </span>
           </div>
         </div>
+
+        <button
+          onClick={() => {
+            const rand = Math.floor(100 + Math.random() * 900);
+            setRateForm({
+              category_id: categories[0]?.id || '',
+              code: `RC-TIER-${rand}`,
+              name: 'Standard Dynamic Tier',
+              daily_rate: 1500,
+              hourly_rate: 150,
+              weekly_rate: 9000,
+              monthly_rate: 32000,
+              weekend_multiplier: 1.15,
+              extra_km_rate: 15,
+              extra_hour_rate: 250,
+              security_deposit: 5000
+            });
+            setCreateModalOpen(true);
+          }}
+          className="btn btn-primary btn-sm"
+          style={{ display: 'inline-flex', alignItems: 'center', gap: '0.35rem' }}
+        >
+          <Plus size={16} /> Add Rate Card
+        </button>
       </div>
 
       {/* Real Backend Pricing Simulation Sandbox */}
@@ -182,6 +286,7 @@ export function RateCardsPage() {
                 <th>Extra Hour</th>
                 <th>Deposit</th>
                 <th>Status</th>
+                <th style={{ textAlign: 'right' }}>Actions</th>
               </tr>
             </thead>
             <tbody>
@@ -207,12 +312,312 @@ export function RateCardsPage() {
                       ACTIVE
                     </span>
                   </td>
+                  <td style={{ textAlign: 'right' }}>
+                    <div style={{ display: 'inline-flex', gap: '0.35rem' }}>
+                      <button
+                        onClick={() => handleOpenEditRate(rc)}
+                        className="btn btn-secondary btn-sm"
+                        title="Edit Rate Card"
+                      >
+                        <Edit size={13} />
+                      </button>
+                      <button
+                        onClick={() => {
+                          setRateToDelete(rc);
+                          setDeleteModalOpen(true);
+                        }}
+                        className="btn btn-secondary btn-sm"
+                        style={{ color: 'var(--danger)', borderColor: 'rgba(239, 68, 68, 0.3)' }}
+                        title="Delete Rate Card"
+                      >
+                        <Trash2 size={13} />
+                      </button>
+                    </div>
+                  </td>
                 </tr>
               ))}
             </tbody>
           </table>
         </div>
       </div>
+
+      {/* Create Rate Card Modal */}
+      {createModalOpen && (
+        <div className="modal-overlay" style={{ zIndex: 1100 }}>
+          <div className="modal-content" style={{ maxWidth: 560 }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                <Tags size={18} color="var(--primary)" />
+                <h3 style={{ margin: 0, fontSize: '1.1rem', fontWeight: 700 }}>Create New Rate Card</h3>
+              </div>
+              <button onClick={() => setCreateModalOpen(false)} style={{ background: 'none', border: 'none', color: 'var(--text-dim)', cursor: 'pointer' }}>
+                <X size={18} />
+              </button>
+            </div>
+
+            <form onSubmit={handleCreateRate}>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+                <div className="form-group">
+                  <label className="form-label">Category *</label>
+                  <select
+                    className="form-control"
+                    value={rateForm.category_id}
+                    onChange={(e) => setRateForm({ ...rateForm, category_id: e.target.value })}
+                    required
+                  >
+                    <option value="">Select Category...</option>
+                    {categories.map((c) => (
+                      <option key={c.id} value={c.id}>{c.name}</option>
+                    ))}
+                  </select>
+                </div>
+                <div className="form-group">
+                  <label className="form-label">Rate Card Code *</label>
+                  <input
+                    type="text"
+                    className="form-control"
+                    value={rateForm.code}
+                    onChange={(e) => setRateForm({ ...rateForm, code: e.target.value })}
+                    required
+                  />
+                </div>
+              </div>
+
+              <div className="form-group">
+                <label className="form-label">Plan Name *</label>
+                <input
+                  type="text"
+                  className="form-control"
+                  value={rateForm.name}
+                  onChange={(e) => setRateForm({ ...rateForm, name: e.target.value })}
+                  required
+                />
+              </div>
+
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '0.75rem' }}>
+                <div className="form-group">
+                  <label className="form-label">Daily (₹)</label>
+                  <input
+                    type="number"
+                    className="form-control"
+                    value={rateForm.daily_rate}
+                    onChange={(e) => setRateForm({ ...rateForm, daily_rate: e.target.value })}
+                    required
+                  />
+                </div>
+                <div className="form-group">
+                  <label className="form-label">Hourly (₹)</label>
+                  <input
+                    type="number"
+                    className="form-control"
+                    value={rateForm.hourly_rate}
+                    onChange={(e) => setRateForm({ ...rateForm, hourly_rate: e.target.value })}
+                  />
+                </div>
+                <div className="form-group">
+                  <label className="form-label">Weekend Mult.</label>
+                  <input
+                    type="number"
+                    step="0.05"
+                    className="form-control"
+                    value={rateForm.weekend_multiplier}
+                    onChange={(e) => setRateForm({ ...rateForm, weekend_multiplier: e.target.value })}
+                  />
+                </div>
+              </div>
+
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem' }}>
+                <div className="form-group">
+                  <label className="form-label">Weekly Rate (₹)</label>
+                  <input
+                    type="number"
+                    className="form-control"
+                    value={rateForm.weekly_rate}
+                    onChange={(e) => setRateForm({ ...rateForm, weekly_rate: e.target.value })}
+                  />
+                </div>
+                <div className="form-group">
+                  <label className="form-label">Monthly Rate (₹)</label>
+                  <input
+                    type="number"
+                    className="form-control"
+                    value={rateForm.monthly_rate}
+                    onChange={(e) => setRateForm({ ...rateForm, monthly_rate: e.target.value })}
+                  />
+                </div>
+              </div>
+
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem' }}>
+                <div className="form-group">
+                  <label className="form-label">Security Deposit (₹)</label>
+                  <input
+                    type="number"
+                    className="form-control"
+                    value={rateForm.security_deposit}
+                    onChange={(e) => setRateForm({ ...rateForm, security_deposit: e.target.value })}
+                  />
+                </div>
+                <div className="form-group">
+                  <label className="form-label">Extra KM Fee (₹/km)</label>
+                  <input
+                    type="number"
+                    className="form-control"
+                    value={rateForm.extra_km_rate}
+                    onChange={(e) => setRateForm({ ...rateForm, extra_km_rate: e.target.value })}
+                  />
+                </div>
+              </div>
+
+              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.65rem', marginTop: '1.25rem' }}>
+                <button type="button" onClick={() => setCreateModalOpen(false)} className="btn btn-secondary">
+                  Cancel
+                </button>
+                <button type="submit" className="btn btn-primary">
+                  Create Rate Card
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Edit Rate Card Modal */}
+      {editModalOpen && editingRate && (
+        <div className="modal-overlay" style={{ zIndex: 1100 }}>
+          <div className="modal-content" style={{ maxWidth: 560 }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                <Tags size={18} color="var(--primary)" />
+                <h3 style={{ margin: 0, fontSize: '1.1rem', fontWeight: 700 }}>Edit Rate Card: {editingRate.name}</h3>
+              </div>
+              <button onClick={() => setEditModalOpen(false)} style={{ background: 'none', border: 'none', color: 'var(--text-dim)', cursor: 'pointer' }}>
+                <X size={18} />
+              </button>
+            </div>
+
+            <form onSubmit={handleUpdateRate}>
+              <div className="form-group">
+                <label className="form-label">Plan Name *</label>
+                <input
+                  type="text"
+                  className="form-control"
+                  value={rateForm.name}
+                  onChange={(e) => setRateForm({ ...rateForm, name: e.target.value })}
+                  required
+                />
+              </div>
+
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '0.75rem' }}>
+                <div className="form-group">
+                  <label className="form-label">Daily (₹)</label>
+                  <input
+                    type="number"
+                    className="form-control"
+                    value={rateForm.daily_rate}
+                    onChange={(e) => setRateForm({ ...rateForm, daily_rate: e.target.value })}
+                    required
+                  />
+                </div>
+                <div className="form-group">
+                  <label className="form-label">Hourly (₹)</label>
+                  <input
+                    type="number"
+                    className="form-control"
+                    value={rateForm.hourly_rate}
+                    onChange={(e) => setRateForm({ ...rateForm, hourly_rate: e.target.value })}
+                  />
+                </div>
+                <div className="form-group">
+                  <label className="form-label">Weekend Mult.</label>
+                  <input
+                    type="number"
+                    step="0.05"
+                    className="form-control"
+                    value={rateForm.weekend_multiplier}
+                    onChange={(e) => setRateForm({ ...rateForm, weekend_multiplier: e.target.value })}
+                  />
+                </div>
+              </div>
+
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem' }}>
+                <div className="form-group">
+                  <label className="form-label">Weekly Rate (₹)</label>
+                  <input
+                    type="number"
+                    className="form-control"
+                    value={rateForm.weekly_rate}
+                    onChange={(e) => setRateForm({ ...rateForm, weekly_rate: e.target.value })}
+                  />
+                </div>
+                <div className="form-group">
+                  <label className="form-label">Monthly Rate (₹)</label>
+                  <input
+                    type="number"
+                    className="form-control"
+                    value={rateForm.monthly_rate}
+                    onChange={(e) => setRateForm({ ...rateForm, monthly_rate: e.target.value })}
+                  />
+                </div>
+              </div>
+
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem' }}>
+                <div className="form-group">
+                  <label className="form-label">Security Deposit (₹)</label>
+                  <input
+                    type="number"
+                    className="form-control"
+                    value={rateForm.security_deposit}
+                    onChange={(e) => setRateForm({ ...rateForm, security_deposit: e.target.value })}
+                  />
+                </div>
+                <div className="form-group">
+                  <label className="form-label">Extra KM Fee (₹/km)</label>
+                  <input
+                    type="number"
+                    className="form-control"
+                    value={rateForm.extra_km_rate}
+                    onChange={(e) => setRateForm({ ...rateForm, extra_km_rate: e.target.value })}
+                  />
+                </div>
+              </div>
+
+              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.65rem', marginTop: '1.25rem' }}>
+                <button type="button" onClick={() => setEditModalOpen(false)} className="btn btn-secondary">
+                  Cancel
+                </button>
+                <button type="submit" className="btn btn-primary">
+                  Save Changes
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Delete Rate Card Confirmation Modal */}
+      {deleteModalOpen && rateToDelete && (
+        <div className="modal-overlay" style={{ zIndex: 1100 }}>
+          <div className="modal-content" style={{ maxWidth: 460 }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
+              <h3 style={{ margin: 0, fontSize: '1.1rem', fontWeight: 700, color: 'var(--danger)' }}>Confirm Rate Card Deletion</h3>
+              <button onClick={() => setDeleteModalOpen(false)} style={{ background: 'none', border: 'none', color: 'var(--text-dim)', cursor: 'pointer' }}>
+                <X size={18} />
+              </button>
+            </div>
+            <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem', lineHeight: 1.5 }}>
+              Are you sure you want to delete rate card <strong>{rateToDelete.name}</strong> ({rateToDelete.code})?
+            </p>
+            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.75rem', marginTop: '1rem' }}>
+              <button type="button" onClick={() => setDeleteModalOpen(false)} className="btn btn-secondary">
+                Cancel
+              </button>
+              <button type="button" onClick={handleConfirmDeleteRate} className="btn btn-danger" style={{ background: 'var(--danger)', color: '#fff' }}>
+                Confirm Delete
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

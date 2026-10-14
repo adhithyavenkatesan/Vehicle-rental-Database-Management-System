@@ -103,7 +103,7 @@ export function App() {
     STAFF: [
       'staff-dashboard', 'vehicles', 'bookings', 'rentals', 'returns', 'customers', 'calendar',
       'invoices', 'payments', 'expenses', 'maintenance', 'fuel', 'documents',
-      'approvals', 'utilization', 'tickets', 'profile'
+      'approvals', 'branches', 'staff', 'rates', 'utilization', 'tickets', 'database', 'profile'
     ],
     CUSTOMER: [
       'customer-portal', 'vehicles', 'bookings', 'agreements', 'invoices', 'tickets', 'profile'

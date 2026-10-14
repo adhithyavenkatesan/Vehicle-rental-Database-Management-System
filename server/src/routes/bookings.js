@@ -383,4 +383,179 @@ router.patch('/:id/status', authenticate, (req, res, next) => {
   }
 });
 
+/**
+ * PUT /api/bookings/:id
+ * Edit/Update booking details (Admin & Staff)
+ */
+router.put('/:id', authenticate, authorize(['ADMIN', 'STAFF']), (req, res, next) => {
+  try {
+    const bookingId = req.params.id;
+    const booking = get('SELECT * FROM bookings WHERE id = ?', [bookingId]);
+    if (!booking) {
+      return res.status(404).json({ success: false, message: 'Booking not found.' });
+    }
+
+    if (booking.status === 'COMPLETED' || booking.status === 'ACTIVE') {
+      return res.status(400).json({
+        success: false,
+        message: `Cannot edit a booking that is currently ${booking.status}.`
+      });
+    }
+
+    const {
+      vehicle_id,
+      start_date,
+      end_date,
+      pickup_location_id,
+      return_location_id,
+      daily_rate,
+      notes,
+      status
+    } = req.body;
+
+    const newVehicleId = vehicle_id || booking.vehicle_id;
+    const newStartDate = start_date || booking.start_date;
+    const newEndDate = end_date || booking.end_date;
+    const newDailyRate = daily_rate !== undefined ? Number(daily_rate) : booking.daily_rate;
+    const newPickupLoc = pickup_location_id || booking.pickup_location_id;
+    const newReturnLoc = return_location_id || booking.return_location_id;
+    const newStatus = status ? status.toUpperCase() : booking.status;
+
+    // Validate dates
+    const sObj = new Date(newStartDate);
+    const eObj = new Date(newEndDate);
+    if (isNaN(sObj.getTime()) || isNaN(eObj.getTime())) {
+      return res.status(400).json({ success: false, message: 'Invalid start or return date format.' });
+    }
+    if (eObj <= sObj) {
+      return res.status(400).json({ success: false, message: 'Return date must be after pickup date.' });
+    }
+
+    const totalDays = calculateRentalDays(newStartDate, newEndDate);
+    const estimatedTotal = Number((totalDays * newDailyRate).toFixed(2));
+
+    // Double booking check if vehicle or dates changed
+    const conflict = get(
+      `SELECT id, booking_ref FROM bookings
+       WHERE vehicle_id = ?
+         AND id != ?
+         AND status IN ('PENDING', 'CONFIRMED', 'ACTIVE')
+         AND NOT (end_date <= ? OR start_date >= ?)
+       LIMIT 1`,
+      [newVehicleId, bookingId, newStartDate, newEndDate]
+    );
+
+    if (conflict) {
+      return res.status(409).json({
+        success: false,
+        message: `Vehicle has a scheduling conflict with booking ${conflict.booking_ref}.`
+      });
+    }
+
+    transaction(() => {
+      run(
+        `UPDATE bookings SET
+           vehicle_id = ?,
+           pickup_location_id = ?,
+           return_location_id = ?,
+           start_date = ?,
+           end_date = ?,
+           total_days = ?,
+           daily_rate = ?,
+           estimated_total = ?,
+           notes = COALESCE(?, notes),
+           status = ?,
+           updated_at = CURRENT_TIMESTAMP
+         WHERE id = ?`,
+        [
+          newVehicleId,
+          newPickupLoc,
+          newReturnLoc,
+          newStartDate,
+          newEndDate,
+          totalDays,
+          newDailyRate,
+          estimatedTotal,
+          notes,
+          newStatus,
+          bookingId
+        ]
+      );
+
+      // Handle vehicle statuses if vehicle changed
+      if (Number(newVehicleId) !== Number(booking.vehicle_id)) {
+        // Restore old vehicle to AVAILABLE if no other bookings
+        const oldVehicleOther = get(
+          "SELECT id FROM bookings WHERE vehicle_id = ? AND id != ? AND status IN ('CONFIRMED', 'ACTIVE')",
+          [booking.vehicle_id, bookingId]
+        );
+        if (!oldVehicleOther) {
+          run("UPDATE vehicles SET status = 'AVAILABLE', updated_at = CURRENT_TIMESTAMP WHERE id = ?", [booking.vehicle_id]);
+        }
+
+        // Mark new vehicle as RESERVED if confirmed
+        if (newStatus === 'CONFIRMED') {
+          run("UPDATE vehicles SET status = 'RESERVED', updated_at = CURRENT_TIMESTAMP WHERE id = ?", [newVehicleId]);
+        }
+      }
+    });
+
+    logAudit(req.user.id, 'BOOKING_UPDATED', 'BOOKING', bookingId, `Updated booking ${booking.booking_ref}`, req.ip);
+
+    const updated = get('SELECT * FROM bookings WHERE id = ?', [bookingId]);
+    res.json({
+      success: true,
+      message: 'Booking updated successfully',
+      booking: updated
+    });
+  } catch (err) {
+    next(err);
+  }
+});
+
+/**
+ * DELETE /api/bookings/:id
+ * Delete booking reservation (Admin & Staff)
+ */
+router.delete('/:id', authenticate, authorize(['ADMIN', 'STAFF']), (req, res, next) => {
+  try {
+    const bookingId = req.params.id;
+    const booking = get('SELECT * FROM bookings WHERE id = ?', [bookingId]);
+    if (!booking) {
+      return res.status(404).json({ success: false, message: 'Booking not found.' });
+    }
+
+    if (booking.status === 'ACTIVE') {
+      return res.status(400).json({
+        success: false,
+        message: 'Cannot delete an active rental reservation. Process vehicle return first.'
+      });
+    }
+
+    transaction(() => {
+      run('DELETE FROM rental_agreements WHERE booking_id = ?', [bookingId]);
+      run('DELETE FROM payments WHERE booking_id = ?', [bookingId]);
+      run('DELETE FROM bookings WHERE id = ?', [bookingId]);
+
+      // If vehicle was RESERVED, restore to AVAILABLE if no other active bookings
+      const otherActive = get(
+        "SELECT id FROM bookings WHERE vehicle_id = ? AND status IN ('CONFIRMED', 'ACTIVE')",
+        [booking.vehicle_id]
+      );
+      if (!otherActive) {
+        run("UPDATE vehicles SET status = 'AVAILABLE', updated_at = CURRENT_TIMESTAMP WHERE id = ?", [booking.vehicle_id]);
+      }
+    });
+
+    logAudit(req.user.id, 'BOOKING_DELETED', 'BOOKING', bookingId, `Deleted booking ${booking.booking_ref}`, req.ip);
+
+    res.json({
+      success: true,
+      message: `Booking ${booking.booking_ref} deleted successfully.`
+    });
+  } catch (err) {
+    next(err);
+  }
+});
+
 module.exports = router;

@@ -22,8 +22,8 @@ router.get('/', (req, res, next) => {
   }
 });
 
-// POST location (Admin)
-router.post('/', authenticate, authorize(['ADMIN']), (req, res, next) => {
+// POST location (Admin & Staff)
+router.post('/', authenticate, authorize(['ADMIN', 'STAFF']), (req, res, next) => {
   try {
     const { name, code, address, city, phone, email } = req.body;
     if (!name || !code || !address || !city) {
@@ -45,8 +45,8 @@ router.post('/', authenticate, authorize(['ADMIN']), (req, res, next) => {
   }
 });
 
-// PUT location (Admin)
-router.put('/:id', authenticate, authorize(['ADMIN']), (req, res, next) => {
+// PUT location (Admin & Staff)
+router.put('/:id', authenticate, authorize(['ADMIN', 'STAFF']), (req, res, next) => {
   try {
     const { name, code, address, city, phone, email, is_active } = req.body;
     run(
@@ -73,6 +73,29 @@ router.put('/:id', authenticate, authorize(['ADMIN']), (req, res, next) => {
 
     const updated = get('SELECT * FROM locations WHERE id = ?', [req.params.id]);
     res.json({ success: true, location: updated });
+  } catch (err) {
+    next(err);
+  }
+});
+
+// DELETE location (Admin & Staff)
+router.delete('/:id', authenticate, authorize(['ADMIN', 'STAFF']), (req, res, next) => {
+  try {
+    const locId = req.params.id;
+    const loc = get('SELECT * FROM locations WHERE id = ?', [locId]);
+    if (!loc) {
+      return res.status(404).json({ success: false, message: 'Location not found.' });
+    }
+
+    const hasVehicles = get('SELECT id FROM vehicles WHERE location_id = ? LIMIT 1', [locId]);
+    if (hasVehicles) {
+      return res.status(400).json({ success: false, message: 'Cannot delete location with vehicles currently stationed there.' });
+    }
+
+    run('DELETE FROM locations WHERE id = ?', [locId]);
+    logAudit(req.user.id, 'LOCATION_DELETED', 'LOCATION', locId, { name: loc.name }, req.ip);
+
+    res.json({ success: true, message: `Location ${loc.name} deleted successfully.` });
   } catch (err) {
     next(err);
   }

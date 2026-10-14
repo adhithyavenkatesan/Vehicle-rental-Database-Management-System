@@ -139,4 +139,84 @@ router.post('/', authenticate, authorize(['ADMIN', 'STAFF']), (req, res, next) =
   }
 });
 
+/**
+ * PUT /api/expenses/:id
+ * Update expense record (Admin & Staff)
+ */
+router.put('/:id', authenticate, authorize(['ADMIN', 'STAFF']), (req, res, next) => {
+  try {
+    const expenseId = req.params.id;
+    const expense = get('SELECT * FROM expenses WHERE id = ?', [expenseId]);
+    if (!expense) {
+      return res.status(404).json({ success: false, message: 'Expense record not found.' });
+    }
+
+    const {
+      vehicle_id,
+      branch_id,
+      category,
+      description,
+      amount,
+      expense_date,
+      vendor_name,
+      invoice_ref,
+      payment_method
+    } = req.body;
+
+    run(
+      `UPDATE expenses SET
+         vehicle_id = COALESCE(?, vehicle_id),
+         branch_id = COALESCE(?, branch_id),
+         category = COALESCE(?, category),
+         description = COALESCE(?, description),
+         amount = COALESCE(?, amount),
+         expense_date = COALESCE(?, expense_date),
+         vendor_name = COALESCE(?, vendor_name),
+         invoice_ref = COALESCE(?, invoice_ref),
+         payment_method = COALESCE(?, payment_method)
+       WHERE id = ?`,
+      [
+        vehicle_id,
+        branch_id,
+        category,
+        description,
+        amount !== undefined ? Number(amount) : null,
+        expense_date,
+        vendor_name,
+        invoice_ref,
+        payment_method,
+        expenseId
+      ]
+    );
+
+    logAudit(req.user.id, 'EXPENSE_UPDATED', 'EXPENSE', expenseId, { category, amount }, req.ip);
+
+    const updated = get('SELECT * FROM expenses WHERE id = ?', [expenseId]);
+    res.json({ success: true, message: 'Expense record updated successfully.', expense: updated });
+  } catch (err) {
+    next(err);
+  }
+});
+
+/**
+ * DELETE /api/expenses/:id
+ * Delete expense record (Admin & Staff)
+ */
+router.delete('/:id', authenticate, authorize(['ADMIN', 'STAFF']), (req, res, next) => {
+  try {
+    const expenseId = req.params.id;
+    const expense = get('SELECT * FROM expenses WHERE id = ?', [expenseId]);
+    if (!expense) {
+      return res.status(404).json({ success: false, message: 'Expense record not found.' });
+    }
+
+    run('DELETE FROM expenses WHERE id = ?', [expenseId]);
+    logAudit(req.user.id, 'EXPENSE_DELETED', 'EXPENSE', expenseId, { description: expense.description }, req.ip);
+
+    res.json({ success: true, message: 'Expense record deleted successfully.' });
+  } catch (err) {
+    next(err);
+  }
+});
+
 module.exports = router;

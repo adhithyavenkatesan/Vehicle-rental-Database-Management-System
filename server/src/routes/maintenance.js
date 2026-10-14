@@ -208,4 +208,98 @@ router.patch('/:id/complete', authenticate, authorize(['ADMIN', 'STAFF']), (req,
   }
 });
 
+/**
+ * PUT /api/maintenance/:id
+ * Update maintenance record (Admin & Staff)
+ */
+router.put('/:id', authenticate, authorize(['ADMIN', 'STAFF']), (req, res, next) => {
+  try {
+    const maintenanceId = req.params.id;
+    const record = get('SELECT * FROM maintenance WHERE id = ?', [maintenanceId]);
+    if (!record) {
+      return res.status(404).json({ success: false, message: 'Maintenance record not found.' });
+    }
+
+    const {
+      maintenance_type,
+      description,
+      start_date,
+      end_date,
+      cost,
+      service_provider,
+      next_service_mileage,
+      next_service_date,
+      status,
+      notes
+    } = req.body;
+
+    run(
+      `UPDATE maintenance SET
+         maintenance_type = COALESCE(?, maintenance_type),
+         description = COALESCE(?, description),
+         start_date = COALESCE(?, start_date),
+         end_date = COALESCE(?, end_date),
+         cost = COALESCE(?, cost),
+         service_provider = COALESCE(?, service_provider),
+         next_service_mileage = COALESCE(?, next_service_mileage),
+         next_service_date = COALESCE(?, next_service_date),
+         status = COALESCE(?, status),
+         notes = COALESCE(?, notes)
+       WHERE id = ?`,
+      [
+        maintenance_type ? maintenance_type.toUpperCase() : null,
+        description,
+        start_date,
+        end_date,
+        cost !== undefined ? Number(cost) : null,
+        service_provider,
+        next_service_mileage ? Number(next_service_mileage) : null,
+        next_service_date,
+        status ? status.toUpperCase() : null,
+        notes,
+        maintenanceId
+      ]
+    );
+
+    logAudit(req.user.id, 'MAINTENANCE_UPDATED', 'MAINTENANCE', maintenanceId, `Updated maintenance log #${maintenanceId}`, req.ip);
+
+    const updated = get('SELECT * FROM maintenance WHERE id = ?', [maintenanceId]);
+    res.json({ success: true, message: 'Maintenance record updated successfully.', maintenance: updated });
+  } catch (err) {
+    next(err);
+  }
+});
+
+/**
+ * DELETE /api/maintenance/:id
+ * Delete maintenance record (Admin & Staff)
+ */
+router.delete('/:id', authenticate, authorize(['ADMIN', 'STAFF']), (req, res, next) => {
+  try {
+    const maintenanceId = req.params.id;
+    const record = get('SELECT * FROM maintenance WHERE id = ?', [maintenanceId]);
+    if (!record) {
+      return res.status(404).json({ success: false, message: 'Maintenance record not found.' });
+    }
+
+    transaction(() => {
+      run('DELETE FROM maintenance WHERE id = ?', [maintenanceId]);
+
+      // If this vehicle was in maintenance, check if any other active maintenance exists
+      if (record.status === 'IN_PROGRESS' || record.status === 'SCHEDULED') {
+        const other = get("SELECT id FROM maintenance WHERE vehicle_id = ? AND status = 'IN_PROGRESS' LIMIT 1", [record.vehicle_id]);
+        if (!other) {
+          run("UPDATE vehicles SET status = 'AVAILABLE', updated_at = CURRENT_TIMESTAMP WHERE id = ?", [record.vehicle_id]);
+        }
+      }
+    });
+
+    logAudit(req.user.id, 'MAINTENANCE_DELETED', 'MAINTENANCE', maintenanceId, `Deleted maintenance record #${maintenanceId}`, req.ip);
+
+    res.json({ success: true, message: 'Maintenance record deleted successfully.' });
+  } catch (err) {
+    next(err);
+  }
+});
+
 module.exports = router;

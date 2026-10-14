@@ -14,7 +14,9 @@ import {
   CreditCard,
   Calendar,
   CheckCircle,
-  FileText
+  FileText,
+  Edit,
+  Trash2
 } from 'lucide-react';
 
 export function CustomersPage() {
@@ -28,6 +30,10 @@ export function CustomersPage() {
   const [selectedCustomer, setSelectedCustomer] = useState(null);
   const [detailsModalOpen, setDetailsModalOpen] = useState(false);
   const [addModalOpen, setAddModalOpen] = useState(false);
+  const [editingCustomer, setEditingCustomer] = useState(null);
+  const [editModalOpen, setEditModalOpen] = useState(false);
+  const [customerToDelete, setCustomerToDelete] = useState(null);
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
 
   const [form, setForm] = useState({
     full_name: '',
@@ -40,6 +46,19 @@ export function CustomersPage() {
     city: 'Metropolis',
     state: 'NY',
     postal_code: '10001'
+  });
+
+  const [editForm, setEditForm] = useState({
+    full_name: '',
+    phone: '',
+    driving_license_no: '',
+    license_expiry: '',
+    address: '',
+    city: '',
+    state: '',
+    postal_code: '',
+    id_card_type: 'PASSPORT',
+    id_card_no: ''
   });
 
   const fetchCustomers = async () => {
@@ -82,6 +101,53 @@ export function CustomersPage() {
       fetchCustomers();
     } catch (err) {
       showToast(err.message, 'error');
+    }
+  };
+
+  const handleOpenEdit = (c) => {
+    setEditingCustomer(c);
+    setEditForm({
+      full_name: c.full_name || '',
+      phone: c.phone || '',
+      driving_license_no: c.driving_license_no || '',
+      license_expiry: c.license_expiry || '',
+      address: c.address || '',
+      city: c.city || '',
+      state: c.state || '',
+      postal_code: c.postal_code || '',
+      id_card_type: c.id_card_type || 'PASSPORT',
+      id_card_no: c.id_card_no || ''
+    });
+    setEditModalOpen(true);
+  };
+
+  const handleEditSubmit = async (e) => {
+    e.preventDefault();
+    if (!editingCustomer) return;
+    try {
+      await api.updateCustomer(editingCustomer.id, editForm);
+      showToast('Customer record updated successfully', 'success');
+      setEditModalOpen(false);
+      setEditingCustomer(null);
+      fetchCustomers();
+    } catch (err) {
+      showToast(err.message || 'Failed to update customer', 'error');
+    }
+  };
+
+  const handleConfirmDelete = async () => {
+    if (!customerToDelete) return;
+    try {
+      const res = await api.deleteCustomer(customerToDelete.id);
+      showToast(res.message || 'Customer deleted successfully', 'success');
+      setDeleteModalOpen(false);
+      setCustomerToDelete(null);
+      if (detailsModalOpen && selectedCustomer?.id === customerToDelete.id) {
+        setDetailsModalOpen(false);
+      }
+      fetchCustomers();
+    } catch (err) {
+      showToast(err.message || 'Failed to delete customer', 'error');
     }
   };
 
@@ -161,9 +227,25 @@ export function CustomersPage() {
                       )}
                     </td>
                     <td style={{ textAlign: 'right' }}>
-                      <button onClick={() => handleOpenDetails(c)} className="btn btn-secondary btn-sm">
-                        Full Dossier
-                      </button>
+                      <div style={{ display: 'inline-flex', gap: '0.4rem' }}>
+                        <button onClick={() => handleOpenDetails(c)} className="btn btn-secondary btn-sm" title="View Full Dossier">
+                          Dossier
+                        </button>
+                        <button onClick={() => handleOpenEdit(c)} className="btn btn-secondary btn-sm" title="Edit Customer Details">
+                          <Edit size={14} />
+                        </button>
+                        <button
+                          onClick={() => {
+                            setCustomerToDelete(c);
+                            setDeleteModalOpen(true);
+                          }}
+                          className="btn btn-secondary btn-sm"
+                          style={{ color: 'var(--danger)', borderColor: 'rgba(239, 68, 68, 0.3)' }}
+                          title="Delete Customer"
+                        >
+                          <Trash2 size={14} />
+                        </button>
+                      </div>
                     </td>
                   </tr>
                 ))}
@@ -250,6 +332,103 @@ export function CustomersPage() {
         onClose={() => setAddModalOpen(false)}
         onCustomerCreated={() => fetchCustomers()}
       />
+
+      {/* Edit Customer Modal */}
+      {editingCustomer && (
+        <Modal isOpen={editModalOpen} onClose={() => setEditModalOpen(false)} title={`Edit Customer: ${editingCustomer.full_name}`} maxWidth={600}>
+          <form onSubmit={handleEditSubmit}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.85rem' }}>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem' }}>
+                <div>
+                  <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 600, marginBottom: '0.25rem' }}>Full Name *</label>
+                  <input required value={editForm.full_name} onChange={(e) => setEditForm({ ...editForm, full_name: e.target.value })} />
+                </div>
+                <div>
+                  <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 600, marginBottom: '0.25rem' }}>Phone Number</label>
+                  <input value={editForm.phone} onChange={(e) => setEditForm({ ...editForm, phone: e.target.value })} />
+                </div>
+              </div>
+
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem' }}>
+                <div>
+                  <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 600, marginBottom: '0.25rem' }}>Driving License Number *</label>
+                  <input required value={editForm.driving_license_no} onChange={(e) => setEditForm({ ...editForm, driving_license_no: e.target.value })} />
+                </div>
+                <div>
+                  <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 600, marginBottom: '0.25rem' }}>License Expiry Date *</label>
+                  <input type="date" required value={editForm.license_expiry} onChange={(e) => setEditForm({ ...editForm, license_expiry: e.target.value })} />
+                </div>
+              </div>
+
+              <div>
+                <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 600, marginBottom: '0.25rem' }}>Street Address</label>
+                <input value={editForm.address} onChange={(e) => setEditForm({ ...editForm, address: e.target.value })} />
+              </div>
+
+              <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr', gap: '0.75rem' }}>
+                <div>
+                  <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 600, marginBottom: '0.25rem' }}>City</label>
+                  <input value={editForm.city} onChange={(e) => setEditForm({ ...editForm, city: e.target.value })} />
+                </div>
+                <div>
+                  <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 600, marginBottom: '0.25rem' }}>State</label>
+                  <input value={editForm.state} onChange={(e) => setEditForm({ ...editForm, state: e.target.value })} />
+                </div>
+                <div>
+                  <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 600, marginBottom: '0.25rem' }}>Postal Code</label>
+                  <input value={editForm.postal_code} onChange={(e) => setEditForm({ ...editForm, postal_code: e.target.value })} />
+                </div>
+              </div>
+
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem' }}>
+                <div>
+                  <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 600, marginBottom: '0.25rem' }}>ID Card Type</label>
+                  <select value={editForm.id_card_type} onChange={(e) => setEditForm({ ...editForm, id_card_type: e.target.value })}>
+                    <option value="PASSPORT">PASSPORT</option>
+                    <option value="NATIONAL_ID">NATIONAL ID / AADHAAR</option>
+                    <option value="VOTER_ID">VOTER ID</option>
+                  </select>
+                </div>
+                <div>
+                  <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 600, marginBottom: '0.25rem' }}>ID Card Number</label>
+                  <input value={editForm.id_card_no} onChange={(e) => setEditForm({ ...editForm, id_card_no: e.target.value })} />
+                </div>
+              </div>
+
+              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.75rem', marginTop: '1rem' }}>
+                <button type="button" onClick={() => setEditModalOpen(false)} className="btn btn-secondary">
+                  Cancel
+                </button>
+                <button type="submit" className="btn btn-primary">
+                  Update Customer
+                </button>
+              </div>
+            </div>
+          </form>
+        </Modal>
+      )}
+
+      {/* Delete Customer Confirmation Modal */}
+      {customerToDelete && (
+        <Modal isOpen={deleteModalOpen} onClose={() => setDeleteModalOpen(false)} title="Confirm Customer Account Deletion" maxWidth={480}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+            <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem', lineHeight: 1.5 }}>
+              Are you sure you want to permanently delete customer <strong>{customerToDelete.full_name}</strong> ({customerToDelete.email})?
+            </p>
+            <p style={{ fontSize: '0.8rem', color: 'var(--text-dim)', background: 'var(--bg-tertiary)', padding: '0.75rem', borderRadius: 'var(--radius-sm)' }}>
+              Note: This action permanently removes the user login credentials and linked historical records. Active ongoing rentals must be completed before deletion.
+            </p>
+            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.75rem', marginTop: '0.5rem' }}>
+              <button type="button" onClick={() => setDeleteModalOpen(false)} className="btn btn-secondary">
+                Cancel
+              </button>
+              <button type="button" onClick={handleConfirmDelete} className="btn btn-danger" style={{ background: 'var(--danger)', color: '#fff' }}>
+                Confirm Delete
+              </button>
+            </div>
+          </div>
+        </Modal>
+      )}
     </div>
   );
 }

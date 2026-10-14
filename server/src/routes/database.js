@@ -70,7 +70,7 @@ router.get('/overview', authenticate, authorize(['ADMIN']), (req, res, next) => 
  * GET /api/database/tables/:table
  * Paginated data browser for any database table
  */
-router.get('/tables/:table', authenticate, authorize(['ADMIN']), (req, res, next) => {
+router.get('/tables/:table', authenticate, authorize(['ADMIN', 'STAFF']), (req, res, next) => {
   try {
     const tableName = req.params.table;
     const page = Math.max(1, Number(req.query.page) || 1);
@@ -175,7 +175,7 @@ router.get('/backup', authenticate, authorize(['ADMIN']), (req, res, next) => {
  * POST /api/database/tables/:table/row
  * Insert a new record into a table (Admin only)
  */
-router.post('/tables/:table/row', authenticate, authorize(['ADMIN']), (req, res, next) => {
+router.post('/tables/:table/row', authenticate, authorize(['ADMIN', 'STAFF']), (req, res, next) => {
   try {
     const tableName = req.params.table;
     const data = req.body;
@@ -211,7 +211,7 @@ router.post('/tables/:table/row', authenticate, authorize(['ADMIN']), (req, res,
  * PUT /api/database/tables/:table/row/:id
  * Update an existing record in a table (Admin only)
  */
-router.put('/tables/:table/row/:id', authenticate, authorize(['ADMIN']), (req, res, next) => {
+router.put('/tables/:table/row/:id', authenticate, authorize(['ADMIN', 'STAFF']), (req, res, next) => {
   try {
     const tableName = req.params.table;
     const rowId = req.params.id;
@@ -248,7 +248,7 @@ router.put('/tables/:table/row/:id', authenticate, authorize(['ADMIN']), (req, r
  * DELETE /api/database/tables/:table/row/:id
  * Delete a record from a table (Admin only)
  */
-router.delete('/tables/:table/row/:id', authenticate, authorize(['ADMIN']), (req, res, next) => {
+router.delete('/tables/:table/row/:id', authenticate, authorize(['ADMIN', 'STAFF']), (req, res, next) => {
   try {
     const tableName = req.params.table;
     const rowId = req.params.id;

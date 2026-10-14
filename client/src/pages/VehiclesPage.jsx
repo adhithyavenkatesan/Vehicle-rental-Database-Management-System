@@ -15,6 +15,7 @@ import {
   Users,
   Plus,
   Edit,
+  Trash2,
   ShieldCheck,
   CheckCircle,
   MapPin,
@@ -41,6 +42,8 @@ export function VehiclesPage({ onBookVehicle }) {
   const [detailsModalOpen, setDetailsModalOpen] = useState(false);
   const [vehicleFormOpen, setVehicleFormOpen] = useState(false);
   const [editingVehicle, setEditingVehicle] = useState(null);
+  const [vehicleToDelete, setVehicleToDelete] = useState(null);
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
 
   // New/Edit Vehicle Form State
   const [formData, setFormData] = useState({
@@ -177,6 +180,22 @@ export function VehiclesPage({ onBookVehicle }) {
       fetchVehicles();
     } catch (err) {
       showToast(err.message, 'error');
+    }
+  };
+
+  const handleConfirmDelete = async () => {
+    if (!vehicleToDelete) return;
+    try {
+      const res = await api.deleteVehicle(vehicleToDelete.id);
+      showToast(res.message || 'Vehicle record processed successfully', 'success');
+      setDeleteModalOpen(false);
+      setVehicleToDelete(null);
+      if (detailsModalOpen && selectedVehicle?.id === vehicleToDelete.id) {
+        setDetailsModalOpen(false);
+      }
+      fetchVehicles();
+    } catch (err) {
+      showToast(err.message || 'Failed to delete vehicle', 'error');
     }
   };
 
@@ -347,9 +366,22 @@ export function VehiclesPage({ onBookVehicle }) {
                   </button>
 
                   {isStaffOrAdmin && (
-                    <button onClick={() => handleOpenEdit(v)} className="btn btn-secondary btn-sm" title="Edit Vehicle Specs">
-                      <Edit size={14} />
-                    </button>
+                    <>
+                      <button onClick={() => handleOpenEdit(v)} className="btn btn-secondary btn-sm" title="Edit Vehicle Specs">
+                        <Edit size={14} />
+                      </button>
+                      <button
+                        onClick={() => {
+                          setVehicleToDelete(v);
+                          setDeleteModalOpen(true);
+                        }}
+                        className="btn btn-secondary btn-sm"
+                        style={{ color: 'var(--danger)', borderColor: 'rgba(239, 68, 68, 0.3)' }}
+                        title="Delete or Deactivate Vehicle"
+                      >
+                        <Trash2 size={14} />
+                      </button>
+                    </>
                   )}
                 </div>
               </div>
@@ -528,6 +560,28 @@ export function VehiclesPage({ onBookVehicle }) {
           </div>
         </form>
       </Modal>
+
+      {/* Delete Confirmation Modal */}
+      {vehicleToDelete && (
+        <Modal isOpen={deleteModalOpen} onClose={() => setDeleteModalOpen(false)} title="Confirm Vehicle Deletion" maxWidth={480}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+            <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem', lineHeight: 1.5 }}>
+              Are you sure you want to delete vehicle <strong>{vehicleToDelete.make} {vehicleToDelete.model}</strong> ({vehicleToDelete.reg_number})?
+            </p>
+            <p style={{ fontSize: '0.8rem', color: 'var(--text-dim)', background: 'var(--bg-tertiary)', padding: '0.75rem', borderRadius: 'var(--radius-sm)' }}>
+              Note: If this vehicle has past rental or billing records, its status will safely transition to <strong>INACTIVE</strong> to preserve relational database integrity.
+            </p>
+            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.75rem', marginTop: '0.5rem' }}>
+              <button type="button" onClick={() => setDeleteModalOpen(false)} className="btn btn-secondary">
+                Cancel
+              </button>
+              <button type="button" onClick={handleConfirmDelete} className="btn btn-danger" style={{ background: 'var(--danger)', color: '#fff' }}>
+                Confirm Delete
+              </button>
+            </div>
+          </div>
+        </Modal>
+      )}
     </div>
   );
 }

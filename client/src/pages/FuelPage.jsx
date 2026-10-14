@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { api } from '../api';
-import { Fuel, Plus, DollarSign, Gauge, TrendingUp, X } from 'lucide-react';
+import { Fuel, Plus, DollarSign, Gauge, TrendingUp, X, Edit, Trash2, AlertTriangle } from 'lucide-react';
 
 export function FuelPage() {
   const [fuelLogs, setFuelLogs] = useState([]);
@@ -9,6 +9,23 @@ export function FuelPage() {
   const [loading, setLoading] = useState(true);
   const [modalOpen, setModalOpen] = useState(false);
   const [submitting, setSubmitting] = useState(false);
+
+  // Edit and Delete states
+  const [editModalOpen, setEditModalOpen] = useState(false);
+  const [editingLog, setEditingLog] = useState(null);
+  const [editForm, setEditForm] = useState({
+    vehicle_id: '',
+    fill_date: '',
+    odometer_reading: '',
+    litres: '',
+    rate_per_litre: '96.72',
+    fuel_station: '',
+    payment_method: 'CARD',
+    notes: ''
+  });
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+  const [logToDelete, setLogToDelete] = useState(null);
+  const [actionLoading, setActionLoading] = useState(false);
 
   const [formData, setFormData] = useState({
     vehicle_id: '',
@@ -34,7 +51,7 @@ export function FuelPage() {
       if (vehRes.success) {
         setVehicles(vehRes.vehicles || []);
         if (vehRes.vehicles?.length > 0) {
-          setFormData((prev) => ({ ...prev, vehicle_id: vehRes.vehicles[0].id }));
+          setFormData((prev) => ({ ...prev, vehicle_id: prev.vehicle_id || vehRes.vehicles[0].id }));
         }
       }
     } catch (err) {
@@ -61,6 +78,64 @@ export function FuelPage() {
       alert(err.message || 'Failed to record fuel log.');
     } finally {
       setSubmitting(false);
+    }
+  };
+
+  const openEditModal = (fl) => {
+    setEditingLog(fl);
+    setEditForm({
+      vehicle_id: fl.vehicle_id || '',
+      fill_date: fl.fill_date || '',
+      odometer_reading: fl.odometer_reading || '',
+      litres: fl.litres || '',
+      rate_per_litre: fl.rate_per_litre || '',
+      fuel_station: fl.fuel_station || '',
+      payment_method: fl.payment_method || 'CARD',
+      notes: fl.notes || ''
+    });
+    setEditModalOpen(true);
+  };
+
+  const handleUpdateFuelLog = async (e) => {
+    e.preventDefault();
+    setActionLoading(true);
+    try {
+      const res = await api.updateFuelLog(editingLog.id, {
+        ...editForm,
+        odometer_reading: Number(editForm.odometer_reading),
+        litres: Number(editForm.litres),
+        rate_per_litre: Number(editForm.rate_per_litre)
+      });
+      if (res.success) {
+        setEditModalOpen(false);
+        setEditingLog(null);
+        fetchFuelData();
+      } else {
+        alert(res.message || 'Failed to update fuel log');
+      }
+    } catch (err) {
+      alert(err.message || 'Error updating fuel log');
+    } finally {
+      setActionLoading(false);
+    }
+  };
+
+  const handleDeleteFuelLog = async () => {
+    if (!logToDelete) return;
+    setActionLoading(true);
+    try {
+      const res = await api.deleteFuelLog(logToDelete.id);
+      if (res.success) {
+        setDeleteModalOpen(false);
+        setLogToDelete(null);
+        fetchFuelData();
+      } else {
+        alert(res.message || 'Failed to delete fuel log');
+      }
+    } catch (err) {
+      alert(err.message || 'Error deleting fuel log');
+    } finally {
+      setActionLoading(false);
     }
   };
 
@@ -151,6 +226,7 @@ export function FuelPage() {
                 <th>Total Cost</th>
                 <th>Fuel Station</th>
                 <th>Logged By</th>
+                <th>Actions</th>
               </tr>
             </thead>
             <tbody>
@@ -168,6 +244,29 @@ export function FuelPage() {
                   <td>{fl.fuel_station}</td>
                   <td>
                     <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>{fl.staff_name || 'Fleet Supervisor'}</span>
+                  </td>
+                  <td>
+                    <div style={{ display: 'flex', gap: '0.4rem' }}>
+                      <button
+                        onClick={() => openEditModal(fl)}
+                        className="btn btn-secondary btn-sm"
+                        title="Edit Fuel Log"
+                        style={{ padding: '0.3rem 0.5rem' }}
+                      >
+                        <Edit size={14} />
+                      </button>
+                      <button
+                        onClick={() => {
+                          setLogToDelete(fl);
+                          setDeleteModalOpen(true);
+                        }}
+                        className="btn btn-danger btn-sm"
+                        title="Delete Fuel Log"
+                        style={{ padding: '0.3rem 0.5rem' }}
+                      >
+                        <Trash2 size={14} />
+                      </button>
+                    </div>
                   </td>
                 </tr>
               ))}
@@ -241,6 +340,115 @@ export function FuelPage() {
           </div>
         </div>
       )}
+
+      {/* Edit Fuel Log Modal */}
+      {editModalOpen && (
+        <div className="modal-overlay" style={{ zIndex: 1100 }}>
+          <div className="modal-content" style={{ maxWidth: 520 }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                <Edit size={18} color="var(--primary)" />
+                <h3 style={{ margin: 0, fontSize: '1.1rem', fontWeight: 700 }}>Edit Fuel Log</h3>
+              </div>
+              <button onClick={() => setEditModalOpen(false)} style={{ background: 'none', border: 'none', color: 'var(--text-dim)', cursor: 'pointer' }}>
+                <X size={18} />
+              </button>
+            </div>
+
+            <form onSubmit={handleUpdateFuelLog}>
+              <div className="form-group">
+                <label className="form-label">Vehicle</label>
+                <select className="form-control" value={editForm.vehicle_id} onChange={(e) => setEditForm({ ...editForm, vehicle_id: e.target.value })}>
+                  {vehicles.map((v) => (
+                    <option key={v.id} value={v.id}>
+                      {v.make} {v.model} ({v.reg_number})
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+                <div className="form-group">
+                  <label className="form-label">Date</label>
+                  <input type="date" className="form-control" value={editForm.fill_date} onChange={(e) => setEditForm({ ...editForm, fill_date: e.target.value })} required />
+                </div>
+                <div className="form-group">
+                  <label className="form-label">Odometer Reading (km)</label>
+                  <input type="number" className="form-control" value={editForm.odometer_reading} onChange={(e) => setEditForm({ ...editForm, odometer_reading: e.target.value })} required />
+                </div>
+              </div>
+
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+                <div className="form-group">
+                  <label className="form-label">Litres Filled</label>
+                  <input type="number" step="0.1" className="form-control" value={editForm.litres} onChange={(e) => setEditForm({ ...editForm, litres: e.target.value })} required />
+                </div>
+                <div className="form-group">
+                  <label className="form-label">Rate / Litre (₹)</label>
+                  <input type="number" step="0.01" className="form-control" value={editForm.rate_per_litre} onChange={(e) => setEditForm({ ...editForm, rate_per_litre: e.target.value })} required />
+                </div>
+              </div>
+
+              <div className="form-group">
+                <label className="form-label">Fuel Station / Commercial Pump</label>
+                <input type="text" className="form-control" value={editForm.fuel_station} onChange={(e) => setEditForm({ ...editForm, fuel_station: e.target.value })} />
+              </div>
+
+              <div className="form-group">
+                <label className="form-label">Notes (Optional)</label>
+                <input type="text" className="form-control" value={editForm.notes} onChange={(e) => setEditForm({ ...editForm, notes: e.target.value })} />
+              </div>
+
+              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.65rem', marginTop: '1.25rem' }}>
+                <button type="button" onClick={() => setEditModalOpen(false)} className="btn btn-secondary">
+                  Cancel
+                </button>
+                <button type="submit" disabled={actionLoading} className="btn btn-primary">
+                  {actionLoading ? 'Updating...' : 'Update Fuel Log'}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Delete Fuel Log Modal */}
+      {deleteModalOpen && logToDelete && (
+        <div className="modal-overlay" style={{ zIndex: 1100 }}>
+          <div className="modal-content" style={{ maxWidth: 440 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem', marginBottom: '1rem' }}>
+              <div style={{ width: 36, height: 36, borderRadius: '50%', background: 'rgba(239, 68, 68, 0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--danger)' }}>
+                <AlertTriangle size={20} />
+              </div>
+              <h3 style={{ margin: 0, fontSize: '1.1rem', fontWeight: 700 }}>Delete Refueling Log</h3>
+            </div>
+            <p style={{ color: 'var(--text-dim)', fontSize: '0.9rem', lineHeight: 1.5, margin: '0 0 1.25rem 0' }}>
+              Are you sure you want to delete this refueling log of <strong>{logToDelete.litres}L (₹{logToDelete.total_amount?.toLocaleString('en-IN')})</strong> for <strong>{logToDelete.make} {logToDelete.model} ({logToDelete.reg_number})</strong>?
+            </p>
+            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.65rem' }}>
+              <button
+                type="button"
+                onClick={() => {
+                  setDeleteModalOpen(false);
+                  setLogToDelete(null);
+                }}
+                className="btn btn-secondary"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                disabled={actionLoading}
+                onClick={handleDeleteFuelLog}
+                className="btn btn-danger"
+              >
+                {actionLoading ? 'Deleting...' : 'Delete Log'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
+

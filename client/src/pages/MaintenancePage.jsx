@@ -11,7 +11,9 @@ import {
   AlertTriangle,
   Clock,
   Car,
-  DollarSign
+  DollarSign,
+  Edit,
+  Trash2
 } from 'lucide-react';
 
 export function MaintenancePage() {
@@ -25,6 +27,20 @@ export function MaintenancePage() {
   const [scheduleModalOpen, setScheduleModalOpen] = useState(false);
   const [completeModalOpen, setCompleteModalOpen] = useState(false);
   const [activeRecord, setActiveRecord] = useState(null);
+  const [editingRecord, setEditingRecord] = useState(null);
+  const [editModalOpen, setEditModalOpen] = useState(false);
+  const [recordToDelete, setRecordToDelete] = useState(null);
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+
+  const [editForm, setEditForm] = useState({
+    maintenance_type: 'ROUTINE_SERVICE',
+    description: '',
+    start_date: '',
+    end_date: '',
+    cost: '',
+    service_provider: '',
+    notes: ''
+  });
 
   const [scheduleForm, setScheduleForm] = useState({
     vehicle_id: '',
@@ -94,6 +110,47 @@ export function MaintenancePage() {
       fetchMaintenance();
     } catch (err) {
       showToast(err.message, 'error');
+    }
+  };
+
+  const handleOpenEdit = (rec) => {
+    setEditingRecord(rec);
+    setEditForm({
+      maintenance_type: rec.maintenance_type || 'ROUTINE_SERVICE',
+      description: rec.description || '',
+      start_date: rec.start_date || '',
+      end_date: rec.end_date || '',
+      cost: rec.cost || '',
+      service_provider: rec.service_provider || '',
+      notes: rec.notes || ''
+    });
+    setEditModalOpen(true);
+  };
+
+  const handleEditSubmit = async (e) => {
+    e.preventDefault();
+    if (!editingRecord) return;
+    try {
+      await api.updateMaintenance(editingRecord.id, editForm);
+      showToast('Maintenance record updated successfully', 'success');
+      setEditModalOpen(false);
+      setEditingRecord(null);
+      fetchMaintenance();
+    } catch (err) {
+      showToast(err.message || 'Failed to update record', 'error');
+    }
+  };
+
+  const handleConfirmDelete = async () => {
+    if (!recordToDelete) return;
+    try {
+      const res = await api.deleteMaintenance(recordToDelete.id);
+      showToast(res.message || 'Maintenance record deleted', 'success');
+      setDeleteModalOpen(false);
+      setRecordToDelete(null);
+      fetchMaintenance();
+    } catch (err) {
+      showToast(err.message || 'Failed to delete record', 'error');
     }
   };
 
@@ -173,17 +230,35 @@ export function MaintenancePage() {
                     <td style={{ fontWeight: 700 }}>₹{m.cost?.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
                     <td><StatusBadge status={m.status} /></td>
                     <td style={{ textAlign: 'right' }}>
-                      {m.status === 'IN_PROGRESS' || m.status === 'SCHEDULED' ? (
+                      <div style={{ display: 'inline-flex', gap: '0.35rem' }}>
+                        {(m.status === 'IN_PROGRESS' || m.status === 'SCHEDULED') && (
+                          <button
+                            onClick={() => handleOpenComplete(m)}
+                            className="btn btn-success btn-sm"
+                            title="Certify vehicle and restore to AVAILABLE"
+                          >
+                            <CheckCircle2 size={13} /> Complete
+                          </button>
+                        )}
                         <button
-                          onClick={() => handleOpenComplete(m)}
-                          className="btn btn-success btn-sm"
-                          title="Certify vehicle and restore to AVAILABLE"
+                          onClick={() => handleOpenEdit(m)}
+                          className="btn btn-secondary btn-sm"
+                          title="Edit Maintenance Log"
                         >
-                          <CheckCircle2 size={14} /> Complete Job
+                          <Edit size={13} />
                         </button>
-                      ) : (
-                        <span style={{ fontSize: '0.8rem', color: 'var(--text-dim)' }}>Archived</span>
-                      )}
+                        <button
+                          onClick={() => {
+                            setRecordToDelete(m);
+                            setDeleteModalOpen(true);
+                          }}
+                          className="btn btn-secondary btn-sm"
+                          style={{ color: 'var(--danger)', borderColor: 'rgba(239, 68, 68, 0.3)' }}
+                          title="Delete Maintenance Log"
+                        >
+                          <Trash2 size={13} />
+                        </button>
+                      </div>
                     </td>
                   </tr>
                 ))}
@@ -331,6 +406,117 @@ export function MaintenancePage() {
           </div>
         </form>
       </Modal>
+
+      {/* Edit Maintenance Modal */}
+      {editingRecord && (
+        <Modal isOpen={editModalOpen} onClose={() => setEditModalOpen(false)} title={`Edit Maintenance: ${editingRecord.make} ${editingRecord.model}`} maxWidth={600}>
+          <form onSubmit={handleEditSubmit}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.85rem' }}>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem' }}>
+                <div>
+                  <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 600, marginBottom: '0.25rem' }}>Maintenance Type *</label>
+                  <select
+                    value={editForm.maintenance_type}
+                    onChange={(e) => setEditForm({ ...editForm, maintenance_type: e.target.value })}
+                  >
+                    <option value="ROUTINE_SERVICE">ROUTINE SERVICE</option>
+                    <option value="REPAIR">REPAIR</option>
+                    <option value="INSPECTION">SAFETY INSPECTION</option>
+                    <option value="TIRE_ROTATION">TIRE ROTATION</option>
+                    <option value="BODY_WORK">BODY WORK</option>
+                  </select>
+                </div>
+                <div>
+                  <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 600, marginBottom: '0.25rem' }}>Service Provider</label>
+                  <input
+                    value={editForm.service_provider}
+                    onChange={(e) => setEditForm({ ...editForm, service_provider: e.target.value })}
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 600, marginBottom: '0.25rem' }}>Description *</label>
+                <textarea
+                  rows={2}
+                  required
+                  value={editForm.description}
+                  onChange={(e) => setEditForm({ ...editForm, description: e.target.value })}
+                />
+              </div>
+
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '0.75rem' }}>
+                <div>
+                  <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 600, marginBottom: '0.25rem' }}>Start Date *</label>
+                  <input
+                    type="date"
+                    required
+                    value={editForm.start_date}
+                    onChange={(e) => setEditForm({ ...editForm, start_date: e.target.value })}
+                  />
+                </div>
+                <div>
+                  <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 600, marginBottom: '0.25rem' }}>End Date</label>
+                  <input
+                    type="date"
+                    value={editForm.end_date}
+                    onChange={(e) => setEditForm({ ...editForm, end_date: e.target.value })}
+                  />
+                </div>
+                <div>
+                  <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 600, marginBottom: '0.25rem' }}>Cost (₹)</label>
+                  <input
+                    type="number"
+                    step="0.01"
+                    value={editForm.cost}
+                    onChange={(e) => setEditForm({ ...editForm, cost: e.target.value })}
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 600, marginBottom: '0.25rem' }}>Workshop Notes</label>
+                <textarea
+                  rows={2}
+                  value={editForm.notes}
+                  onChange={(e) => setEditForm({ ...editForm, notes: e.target.value })}
+                />
+              </div>
+
+              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.75rem', marginTop: '0.5rem' }}>
+                <button type="button" onClick={() => setEditModalOpen(false)} className="btn btn-secondary">
+                  Cancel
+                </button>
+                <button type="submit" className="btn btn-primary">
+                  Save Changes
+                </button>
+              </div>
+            </div>
+          </form>
+        </Modal>
+      )}
+
+      {/* Delete Maintenance Confirmation Modal */}
+      {recordToDelete && (
+        <Modal isOpen={deleteModalOpen} onClose={() => setDeleteModalOpen(false)} title="Confirm Maintenance Deletion" maxWidth={480}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+            <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem', lineHeight: 1.5 }}>
+              Are you sure you want to delete this maintenance record for vehicle <strong>{recordToDelete.make} {recordToDelete.model}</strong> ({recordToDelete.reg_number})?
+            </p>
+            <p style={{ fontSize: '0.8rem', color: 'var(--text-dim)', background: 'var(--bg-tertiary)', padding: '0.75rem', borderRadius: 'var(--radius-sm)' }}>
+              Note: If this was the only active maintenance for the vehicle, its fleet status will automatically restore to <strong>AVAILABLE</strong>.
+            </p>
+            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.75rem', marginTop: '0.5rem' }}>
+              <button type="button" onClick={() => setDeleteModalOpen(false)} className="btn btn-secondary">
+                Cancel
+              </button>
+              <button type="button" onClick={handleConfirmDelete} className="btn btn-danger" style={{ background: 'var(--danger)', color: '#fff' }}>
+                Confirm Delete
+              </button>
+            </div>
+          </div>
+        </Modal>
+      )}
     </div>
   );
 }

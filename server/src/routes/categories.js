@@ -22,8 +22,8 @@ router.get('/', (req, res, next) => {
   }
 });
 
-// POST category (Admin)
-router.post('/', authenticate, authorize(['ADMIN']), (req, res, next) => {
+// POST category (Admin & Staff)
+router.post('/', authenticate, authorize(['ADMIN', 'STAFF']), (req, res, next) => {
   try {
     const { name, code, description, daily_rate, hourly_rate, deposit_amount, icon } = req.body;
     if (!name || !code || !daily_rate) {
@@ -45,8 +45,8 @@ router.post('/', authenticate, authorize(['ADMIN']), (req, res, next) => {
   }
 });
 
-// PUT category (Admin)
-router.put('/:id', authenticate, authorize(['ADMIN']), (req, res, next) => {
+// PUT category (Admin & Staff)
+router.put('/:id', authenticate, authorize(['ADMIN', 'STAFF']), (req, res, next) => {
   try {
     const { name, code, description, daily_rate, hourly_rate, deposit_amount, icon } = req.body;
     run(
@@ -73,6 +73,29 @@ router.put('/:id', authenticate, authorize(['ADMIN']), (req, res, next) => {
 
     const updated = get('SELECT * FROM vehicle_categories WHERE id = ?', [req.params.id]);
     res.json({ success: true, category: updated });
+  } catch (err) {
+    next(err);
+  }
+});
+
+// DELETE category (Admin & Staff)
+router.delete('/:id', authenticate, authorize(['ADMIN', 'STAFF']), (req, res, next) => {
+  try {
+    const catId = req.params.id;
+    const cat = get('SELECT * FROM vehicle_categories WHERE id = ?', [catId]);
+    if (!cat) {
+      return res.status(404).json({ success: false, message: 'Category not found.' });
+    }
+
+    const hasVehicles = get('SELECT id FROM vehicles WHERE category_id = ? LIMIT 1', [catId]);
+    if (hasVehicles) {
+      return res.status(400).json({ success: false, message: 'Cannot delete category that currently has vehicles assigned.' });
+    }
+
+    run('DELETE FROM vehicle_categories WHERE id = ?', [catId]);
+    logAudit(req.user.id, 'CATEGORY_DELETED', 'CATEGORY', catId, { name: cat.name }, req.ip);
+
+    res.json({ success: true, message: `Category ${cat.name} deleted successfully.` });
   } catch (err) {
     next(err);
   }

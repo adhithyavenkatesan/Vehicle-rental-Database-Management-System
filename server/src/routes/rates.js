@@ -150,9 +150,9 @@ router.post('/calculate', authenticate, (req, res, next) => {
 
 /**
  * POST /api/rates
- * Create new rate card (Admin only)
+ * Create new rate card (Admin & Staff)
  */
-router.post('/', authenticate, authorize(['ADMIN']), (req, res, next) => {
+router.post('/', authenticate, authorize(['ADMIN', 'STAFF']), (req, res, next) => {
   try {
     const {
       category_id, branch_id, code, name, hourly_rate, daily_rate,
@@ -193,9 +193,9 @@ router.post('/', authenticate, authorize(['ADMIN']), (req, res, next) => {
 
 /**
  * PUT /api/rates/:id
- * Update rate card (Admin only)
+ * Update rate card (Admin & Staff)
  */
-router.put('/:id', authenticate, authorize(['ADMIN']), (req, res, next) => {
+router.put('/:id', authenticate, authorize(['ADMIN', 'STAFF']), (req, res, next) => {
   try {
     const rc = get('SELECT id FROM rate_cards WHERE id = ?', [req.params.id]);
     if (!rc) {
@@ -235,6 +235,27 @@ router.put('/:id', authenticate, authorize(['ADMIN']), (req, res, next) => {
     logAudit(req.user.id, 'UPDATE_RATE_CARD', 'RATE_CARD', rc.id, { id: rc.id }, req.ip);
 
     res.json({ success: true, message: 'Rate card updated successfully.' });
+  } catch (err) {
+    next(err);
+  }
+});
+
+/**
+ * DELETE /api/rates/:id
+ * Delete rate card (Admin & Staff)
+ */
+router.delete('/:id', authenticate, authorize(['ADMIN', 'STAFF']), (req, res, next) => {
+  try {
+    const rcId = req.params.id;
+    const rc = get('SELECT * FROM rate_cards WHERE id = ?', [rcId]);
+    if (!rc) {
+      return res.status(404).json({ success: false, message: 'Rate card not found.' });
+    }
+
+    run('DELETE FROM rate_cards WHERE id = ?', [rcId]);
+    logAudit(req.user.id, 'DELETE_RATE_CARD', 'RATE_CARD', rcId, { code: rc.code }, req.ip);
+
+    res.json({ success: true, message: `Rate card ${rc.name} (${rc.code}) deleted successfully.` });
   } catch (err) {
     next(err);
   }

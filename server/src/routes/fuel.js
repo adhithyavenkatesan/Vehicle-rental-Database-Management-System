@@ -134,4 +134,101 @@ router.post('/', authenticate, authorize(['ADMIN', 'STAFF']), (req, res, next) =
   }
 });
 
+/**
+ * PUT /api/fuel/:id
+ * Update fuel log (Admin & Staff)
+ */
+router.put('/:id', authenticate, authorize(['ADMIN', 'STAFF']), (req, res, next) => {
+  try {
+    const fuelLogId = req.params.id;
+    const log = get('SELECT * FROM fuel_logs WHERE id = ?', [fuelLogId]);
+    if (!log) {
+      return res.status(404).json({ success: false, message: 'Fuel log not found.' });
+    }
+
+    const {
+      vehicle_id,
+      fill_date,
+      odometer_reading,
+      litres,
+      rate_per_litre,
+      fuel_station,
+      payment_method,
+      notes
+    } = req.body;
+
+    const newVehicleId = vehicle_id || log.vehicle_id;
+    const newDate = fill_date || log.fill_date;
+    const newOdo = odometer_reading !== undefined ? Number(odometer_reading) : log.odometer_reading;
+    const newLitres = litres !== undefined ? Number(litres) : log.litres;
+    const newRate = rate_per_litre !== undefined ? Number(rate_per_litre) : log.rate_per_litre;
+    const newStation = fuel_station || log.fuel_station;
+    const newMethod = payment_method || log.payment_method;
+    const newTotal = Number((newLitres * newRate).toFixed(2));
+
+    run(
+      `UPDATE fuel_logs SET
+         vehicle_id = ?,
+         fill_date = ?,
+         odometer_reading = ?,
+         litres = ?,
+         rate_per_litre = ?,
+         total_amount = ?,
+         fuel_station = ?,
+         payment_method = ?,
+         notes = COALESCE(?, notes)
+       WHERE id = ?`,
+      [
+        newVehicleId,
+        newDate,
+        newOdo,
+        newLitres,
+        newRate,
+        newTotal,
+        newStation,
+        newMethod,
+        notes,
+        fuelLogId
+      ]
+    );
+
+    logAudit(req.user.id, 'FUEL_LOG_UPDATED', 'FUEL_LOG', fuelLogId, { litres: newLitres, totalAmount: newTotal }, req.ip);
+
+    const updated = get(
+      `SELECT fl.*, v.make, v.model, v.reg_number, v.fuel_type, u.full_name as staff_name
+       FROM fuel_logs fl
+       JOIN vehicles v ON fl.vehicle_id = v.id
+       LEFT JOIN staff s ON fl.logged_by_staff_id = s.id
+       LEFT JOIN users u ON s.user_id = u.id
+       WHERE fl.id = ?`,
+      [fuelLogId]
+    );
+
+    res.json({ success: true, message: 'Fuel log updated successfully.', fuel_log: updated });
+  } catch (err) {
+    next(err);
+  }
+});
+
+/**
+ * DELETE /api/fuel/:id
+ * Delete fuel log (Admin & Staff)
+ */
+router.delete('/:id', authenticate, authorize(['ADMIN', 'STAFF']), (req, res, next) => {
+  try {
+    const fuelLogId = req.params.id;
+    const log = get('SELECT * FROM fuel_logs WHERE id = ?', [fuelLogId]);
+    if (!log) {
+      return res.status(404).json({ success: false, message: 'Fuel log not found.' });
+    }
+
+    run('DELETE FROM fuel_logs WHERE id = ?', [fuelLogId]);
+    logAudit(req.user.id, 'FUEL_LOG_DELETED', 'FUEL_LOG', fuelLogId, null, req.ip);
+
+    res.json({ success: true, message: 'Fuel log deleted successfully.' });
+  } catch (err) {
+    next(err);
+  }
+});
+
 module.exports = router;

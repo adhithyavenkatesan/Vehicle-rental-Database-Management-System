@@ -280,4 +280,66 @@ router.put('/:id', authenticate, authorize(['ADMIN', 'STAFF']), (req, res, next)
   }
 });
 
+/**
+ * DELETE /api/customers/:id
+ * Delete customer record and user account (Admin & Staff)
+ */
+router.delete('/:id', authenticate, authorize(['ADMIN', 'STAFF']), (req, res, next) => {
+  try {
+    const customerId = req.params.id;
+    const customer = get('SELECT c.*, u.full_name, u.email FROM customers c JOIN users u ON c.user_id = u.id WHERE c.id = ?', [customerId]);
+    if (!customer) {
+      return res.status(404).json({ success: false, message: 'Customer not found.' });
+    }
+
+    // Check if customer has an active ongoing rental
+    const activeRental = get(
+      "SELECT id, rental_ref FROM rentals WHERE customer_id = ? AND status = 'ACTIVE' LIMIT 1",
+      [customerId]
+    );
+    if (activeRental) {
+      return res.status(400).json({
+        success: false,
+        message: `Cannot delete customer with active ongoing rental (${activeRental.rental_ref}). Complete return first.`
+      });
+    }
+
+    transaction(() => {
+      // Clean up customer rentals, returns, bookings, agreements, invoices, payments if any
+      const rentalIds = all('SELECT id FROM rentals WHERE customer_id = ?', [customerId]).map(r => r.id);
+      if (rentalIds.length > 0) {
+        const ph = rentalIds.map(() => '?').join(',');
+        run(`DELETE FROM returns WHERE rental_id IN (${ph})`, rentalIds);
+        run(`DELETE FROM inspections WHERE rental_id IN (${ph})`, rentalIds);
+        run(`DELETE FROM payments WHERE rental_id IN (${ph})`, rentalIds);
+        run(`DELETE FROM rental_agreements WHERE rental_id IN (${ph})`, rentalIds);
+        run(`DELETE FROM rentals WHERE id IN (${ph})`, rentalIds);
+      }
+
+      const bookingIds = all('SELECT id FROM bookings WHERE customer_id = ?', [customerId]).map(b => b.id);
+      if (bookingIds.length > 0) {
+        const bph = bookingIds.map(() => '?').join(',');
+        run(`DELETE FROM payments WHERE booking_id IN (${bph})`, bookingIds);
+        run(`DELETE FROM rental_agreements WHERE booking_id IN (${bph})`, bookingIds);
+        run(`DELETE FROM bookings WHERE id IN (${bph})`, bookingIds);
+      }
+
+      run('DELETE FROM invoices WHERE customer_id = ?', [customerId]);
+      run('DELETE FROM support_tickets WHERE customer_id = ?', [customerId]);
+      run('DELETE FROM notifications WHERE user_id = ?', [customer.user_id]);
+      run('DELETE FROM customers WHERE id = ?', [customerId]);
+      run('DELETE FROM users WHERE id = ?', [customer.user_id]);
+    });
+
+    logAudit(req.user.id, 'CUSTOMER_DELETED', 'CUSTOMER', customerId, `Deleted customer ${customer.full_name} (${customer.email})`, req.ip);
+
+    res.json({
+      success: true,
+      message: `Customer ${customer.full_name} successfully deleted.`
+    });
+  } catch (err) {
+    next(err);
+  }
+});
+
 module.exports = router;
